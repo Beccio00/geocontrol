@@ -13,7 +13,7 @@ Version: V1 - description of Geocontrol as described in the swagger
 - [Requirements Document - GeoControl](#requirements-document---geocontrol)
 - [Contents](#contents)
 - [Informal description](#informal-description)
-- [Business model](#business-model)
+- [Business Model](#business-model)
 - [Stakeholders](#stakeholders)
 - [Context Diagram and interfaces](#context-diagram-and-interfaces)
   - [Context Diagram](#context-diagram)
@@ -25,9 +25,9 @@ Version: V1 - description of Geocontrol as described in the swagger
 - [Use case diagram and use cases](#use-case-diagram-and-use-cases)
   - [Use case diagram](#use-case-diagram)
     - [Use case 1, UC1](#use-case-1-uc1)
-      - [Scenario 1.1](#scenario-11)
-      - [Scenario 1.2](#scenario-12)
-      - [Scenario 1.x](#scenario-1x)
+        - [Scenario 1.1](#scenario-11)
+        - [Scenario 1.2](#scenario-12)
+        - [Scenario 1.x](#scenario-1x)
     - [Use case 2, UC2](#use-case-2-uc2)
     - [Use case x, UCx](#use-case-x-ucx)
 - [Glossary](#glossary)
@@ -36,9 +36,19 @@ Version: V1 - description of Geocontrol as described in the swagger
 
 # Informal description
 
-GeoControl is a software system designed for monitoring physical and environmental variables in various contexts: from hydrogeological analyses of mountain areas to the surveillance of historical buildings, and even the control of internal parameters (such as temperature or lighting) in residential or working environments.
+GeoControl è un sistema software progettato per monitorare variabili fisiche e ambientali in diversi contesti: dalle analisi idrogeologiche di aree montane alla sorveglianza di edifici storici, fino al controllo di parametri interni (come temperatura o illuminazione) in ambienti residenziali o lavorativi.
 
 # Business Model
+
+Il prodotto è commissionato inizialmente dall' Unione delle Comunità Montane della regione Piemonte per la gestione dello stato idrogeologico del territorio, che quindi paga per il prodotto, lasciando i diritti sul software all'azienda sviluppatrice. <br> GeoControl, grazie alla struttura modulare del software, ha potuto commercializzare il prodotto immettendolo sul mercato con il fine di distribuirlo ad altre diverse entità pubbliche e private. 
+
+- Le aziende private possono decidere di richiedere una valutazione per l’installazione dei sensori richiesti. La spesa come preventivo sarà eventualmente rimborsato se l’azienda decidesse di firmare il contratto. Il contratto avrà una scadenza decennale, quinquennale, triennale con la possibilità di ricevere uno sconto nel caso le aziende decidessero di avere un piano che copre più anni, il pagamento avviene annualmente. Inoltre ci saranno piani diversi a seconda di quanti sensori l’azienda può installare: 
+ 
+  - Contratto base: numero di sensori basso (es. 50 sensori)
+  - Contratto business: numero di sensori elevato (es. 250 sensori)
+  - Contratto pro: numero di sensori illimitato → chiedere numero di sensori
+- Gli enti pubblici possono usurfruire di sconti per contratti pro da contrattulaizzare caso per caso
+- •	Fornitura, installazione e la manutenzione di sensori e gateway è affidato a un’azienda esterna affiliata a GeoControl.
 
 # Stakeholders
 
