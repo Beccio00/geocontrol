@@ -147,12 +147,19 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 
 \<Describe constraints on functional requirements>
 
-|   ID    | Type (efficiency, reliability, ..) | Description | Refers to |
+|   ID    | Tipo | Descrizione | Riferito a |
 | :-----: | :--------------------------------: | :---------: | :-------: |
-|  NFR1   |                                    |             |           |
-|  NFR2   |                                    |             |           |
-|  NFR3   |                                    |             |           |
-| NFRx .. |                                    |             |           |
+|  NFR1   |    dominio  | timestamp in formato ISO 8601 |   FR 6.2    |
+|  NFR2   |        dominio       | unità di misura del SI |   FR 6  |
+|  NFR3   |        dominio       | Gli elementi del sistema sono identificati univocamente| FR 3, FR 4, FR 5    |
+|  NFR4   |        affidabilità   | il sistema non deve perdere più di 6 misurazioni all'anno (per sensore)|    FR6    |
+|  NFR5   | usabilità | l'utente viewer non deve avere bisogno di training |    FR 2    |
+|  NFR6   | usabilità | un utente 'operatore' deve imparare a usare il software in meno di 16 ore di training |   FR 2     |
+|  NFR7   | usabilità | un utente 'admin' deve imparare a usare il software in meno di 24 ore di training |   FR 2     |
+|  NFR8   |  sicurezza      | protenzione da accessi esterni | FR1 |
+|  NFR9  |  portabilità     | L’applicazione web deve essere disponibile sui seguenti browser: • Chrome (da versione ...) • Firefox (da versione ...) • Safari • Opera| Tutti  |
+
+
 
 # Use case diagram and use cases
 
