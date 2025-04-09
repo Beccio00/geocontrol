@@ -63,18 +63,16 @@ Il prodotto è commissionato inizialmente dall' Unione delle Comunità Montane d
 
 ## Context Diagram
 
-\<Define here Context diagram using UML use case diagram>
-
-\<actors are a subset of stakeholders>
+![Diagramma di contesto](./images/Context_Diagram.png)
 
 ## Interfaces
 
-\<describe here each interface in the context diagram>
-
-
-|   Actor   | Logical Interface | Physical Interface |
+|   Attore   | Interfaccia logica | Interfaccia fisica |
 | :-------: | :---------------: | :----------------: |
-| Actor x.. |                   |                    |
+| Rete |  Connessione (via API)  |  API per inviare le misurazioni in formato JSON     |
+|  Utente  | PC | GUI |
+|  Operatore  | PC | GUI |
+|  Admin  | PC | GUI + console di comando |
 
 # Stories and personas
 
