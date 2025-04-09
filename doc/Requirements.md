@@ -73,7 +73,7 @@ Il prodotto è commissionato inizialmente dall' Unione delle Comunità Montane d
 
 # Stakeholders
 
-| Stakeholder | Description |
+| Stakeholder | Descrizione |
 | :--------------: | :---------: |
 | Visualizzatore | Utilizzano il servizio consultando i dati   |
 | Operatore |  Aggiornamento e manutenzione software di reti, gateway e sensori  |
