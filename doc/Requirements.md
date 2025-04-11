@@ -61,24 +61,30 @@ GeoControl è un sistema software progettato per monitorare variabili fisiche e 
 
 # Business Model
 
-Il prodotto è commissionato inizialmente dall' Unione delle Comunità Montane della regione Piemonte per la gestione dello stato idrogeologico del territorio, che quindi paga per il prodotto, lasciando i diritti sul software all'azienda sviluppatrice. <br> GeoControl, grazie alla struttura modulare del software, ha potuto commercializzare il prodotto immettendolo sul mercato con il fine di distribuirlo ad altre diverse entità pubbliche e private. 
+Geo Control è una piattaforma commissionata dall'Unione delle Comunità Montane della Regione Piemonte, finalizzata alla gestione e al monitoraggio dello stato idrogeologico del territorio.  
 
-- Le aziende private possono decidere di richiedere una valutazione per l’installazione dei sensori richiesti. La spesa come preventivo sarà eventualmente rimborsato se l’azienda decidesse di firmare il contratto. Il contratto avrà una scadenza decennale, quinquennale, triennale con la possibilità di ricevere uno sconto nel caso le aziende decidessero di avere un piano che copre più anni, il pagamento avviene annualmente. Inoltre ci saranno piani diversi a seconda di quanti sensori l’azienda può installare: 
- 
-  - Contratto base: numero di sensori basso (es. 50 sensori)
-  - Contratto business: numero di sensori elevato (es. 250 sensori)
-  - Contratto pro: numero di sensori illimitato → chiedere numero di sensori
-- Gli enti pubblici possono usurfruire di sconti per contratti pro da contrattulaizzare caso per caso
-- •	Fornitura, installazione e la manutenzione di sensori e gateway è affidato a un’azienda esterna affiliata a GeoControl.
+I diritti di proprietà intellettuale sul software restano in capo all’azienda sviluppatrice, la quale detiene piena facoltà di sfruttamento commerciale del prodotto.  
+
+Grazie alla sua architettura modulare, il software è predisposto per la distribuzione su scala più ampia, potendo essere proposto sul mercato a enti pubblici e privati che necessitano di un monitoraggio continuativo dei parametri fisici relativi alle proprie aree di competenza.  
+
+L’accesso a Geo Control avviene tramite la sottoscrizione di contratti di licenza a durata determinata, con un costo variabile in funzione della durata del contratto stesso della dimensione delle aree da monitorare. Durante il periodo di validità contrattuale, sono garantiti il supporto tecnico, l’assistenza dedicata e l’aggiornamento costante sia del software sia dell’interfaccia utente.  
+
+Il contratto non può essere interrotto anticipatamente se non previo pagamento di una penale. Alla scadenza, l’acquirente ha facoltà di rinnovare e/o ricontrattare il contratto o di cessarne l’utilizzo.  
+
+Tutta l’infrastruttura fisica e tecnica, comprensiva di gateway, reti e sensori, è gestita da soggetti terzi.  
+
+Geo Control si occupa esclusivamente della gestione, archiviazione e consultazione dei dati trasmessi da tali dispositivi. 
 
 # Stakeholders
 
 | Stakeholder | Descrizione |
 | :--------------: | :---------: |
-| Visualizzatore | Utilizzano il servizio consultando i dati   |
-| Operatore |  Aggiornamento e manutenzione software di reti, gateway e sensori  |
-| Amministratore |  Amministrazione di tutte le risorse (reti e utenti)    |
-| Azienda esterna |   Installazione di nuove reti e manutenzione fisica delle reti esistenti   |
+|Ente pubblico/privato| Acquisto del servizio|
+| Visualizzatore | Consultazione dei dati|
+| Operatore |  Gestione di reti, gateway e sensori e inserimento misurazioni  |
+| Amministratore |  Accesso completo a tutte le risorse (gestione degli utenti e della rete)    |
+| Tecnico esterno |   Installazione, manutenzione e rimozione in loco di sensori e gateway    |
+| Tecnico di sistema | Manutenzione e aggiornamento del sistema  |
 
 # Context Diagram and interfaces
 
@@ -90,7 +96,7 @@ Il prodotto è commissionato inizialmente dall' Unione delle Comunità Montane d
 
 |   Attore   | Interfaccia logica | Interfaccia fisica |
 | :-------: | :---------------: | :----------------: |
-| Rete |  Connessione (via API)  |  API per inviare le misurazioni in formato JSON     |
+| Rete |  Connessione internet (via API)  |  API per inviare le misurazioni in formato JSON     |
 |  Utente  | PC | GUI |
 |  Operatore  | PC | GUI |
 |  Admin  | PC | GUI + console di comando |
@@ -114,53 +120,54 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 
 |  ID   | Description |
 | :---: | :---------: |
-|  FR1  | Autenticazione con token univoco  |
+|  FR1  | Autenticazione e autorizzazione con token univoco |
 |||
 |  FR2  | Gestione utenti|
 | 2.1 | Creazione nuovo utente |
 | 2.2 | Eliminazione di un utente |
-| 2.3 | Accesso alla lista degli utenti |
-| 2.4 | Accesso ad uno specifico utente |
+| 2.3 | Visualizzazione della lista degli utenti |
+| 2.4 | Visualizzazione di uno specifico utente |
 |||
 |  FR3  | Gestione delle reti|
 | 3.1 | Creazione di una nuova rete |
 | 3.2 | Aggiornamento di una rete esistente |
 | 3.3 | Eliminazione di una rete |
-| 3.4 | Accesso ad una rete specifica |
-| 3.5 | Accesso a tutte le reti |
+| 3.4 | Visualizzazione di una rete specifica |
+| 3.5 | Visualizzazione di tutte le reti |
 |||
 |  FR4  | Gestione dei gateway|
 | 4.1 | Creazione di un nuovo gateway nella rete |
 | 4.2 | Aggiornamento di un gateway esistente |
 | 4.3 | Eliminazione di un gateway esistente |
-| 4.4 | Accesso a tutti i gateway di una rete |
-| 4.5 | Accesso ad uno specifico gateway |
+| 4.4 | Visualizzazione di tutti i gateway di una rete |
+| 4.5 | Visualizzazione di uno specifico gateway |
 |||
 |  FR5  | Gestione dei sensori |
 | 5.1 | Creazione di un nuovo sensore |
 | 5.2 | Aggiornamento di un sensore esistente |
 | 5.3 | Eliminazione di un sensore esistente |
-| 5.4 | Accesso a tutti i sensori di un gateway |
-| 5.5 | Accesso ad uno specifico sensore |
+| 5.4 | Visualizzazione di tutti i sensori di un gateway |
+| 5.5 | Visualizzazione di uno specifico sensore |
 |||
 |  FR6  | Gestione delle misurazioni |
 | 6.1 | Archiviazione delle misurazioni di un sensore |
 | 6.2 | Gestione dei timestamp |
 | 6.2.1 | Conversione in formato ISO 8601 con riferimento UTC |
-| 6.2.2 | Conversione in fuso orario locale per l’accesso ai dati |
-| 6.3 | Accesso alle misurazioni di un set di sensori di una rete |
-| 6.4 | Accesso alle misurazioni di uno specifico sensore |
+| 6.2.2 | Conversione in fuso orario locale per la visualizzazione dei dati |
+| 6.3 | Visualizzazione delle misurazioni di un set di sensori di una rete |
+| 6.4 | Visualizzazione delle misurazioni di uno specifico sensore |
 |||
 |  FR7  | Gestione delle statistiche |
 | 7.1 | Calcolo delle media |
 | 7.2 | Calcolo della varianza |
 | 7.3 | Calcolo delle soglie |
 | 7.4 | Identificazione di anomalie secondo soglie |
-| 7.5 | Accesso alle statistiche di un set di sensori di una specifica rete |
-| 7.6 | Accesso alle anomalie di un set di sensori di una specifica rete |
-| 7.7 | Accesso alle statistiche di un sensore |
-| 7.8 | Accesso alle anomalie di un sensore |
+| 7.5 | Visualizzazione delle statistiche di un set di sensori di una specifica rete |
+| 7.6 | Visualizzazione delle anomalie di un set di sensori di una specifica rete |
+| 7.7 | Visualizzazione delle statistiche di un sensore |
+| 7.8 | Visualizzazione delle anomalie di un sensore |
 |||
+| FR 8 | Sistema di log per gestione degli errori |
 
 ## Non Functional Requirements
 
@@ -170,12 +177,12 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 | :-----: | :--------------------------------: | :---------: | :-------: |
 |  NFR1   |    dominio  | timestamp in formato ISO 8601 |   FR 6.2    |
 |  NFR2   |        dominio       | unità di misura del SI |   FR 6  |
-|  NFR3   |        dominio       | Gli elementi del sistema sono identificati univocamente| FR 3, FR 4, FR 5    |
+|  NFR3   |        dominio       | gli elementi del sistema sono identificati univocamente| FR 3, FR 4, FR 5    |
 |  NFR4   |        affidabilità   | il sistema non deve perdere più di 6 misurazioni all'anno (per sensore)|    FR6    |
-|  NFR5   | usabilità | l'utente viewer non deve avere bisogno di training |    FR 2    |
-|  NFR6   | usabilità | un utente 'operatore' deve imparare a usare il software in meno di 16 ore di training |   FR 2     |
-|  NFR7   | usabilità | un utente 'admin' deve imparare a usare il software in meno di 24 ore di training |   FR 2     |
-|  NFR8   |  sicurezza      | protenzione da accessi esterni | FR1 |
+|  NFR5   | usabilità | l'utente 'visualizzatore' non deve avere bisogno di training |    FR 2    |
+|  NFR6   | usabilità | un utente 'operatore' deve imparare a usare il software in meno di 4 ore di training |   FR 2     |
+|  NFR7   | usabilità | un utente 'amministratore' deve imparare a usare il software in meno di 8 ore di training |   FR 2     |
+|  NFR8   |  sicurezza      | protenzione da accessi esterni non autorizzati | FR1 |
 |  NFR9  |  portabilità     | L’applicazione web deve essere disponibile sui seguenti browser: • Chrome (da versione ...) • Firefox (da versione ...) • Safari • Opera| Tutti  |
 
 
