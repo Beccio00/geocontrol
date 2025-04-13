@@ -191,9 +191,9 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 
 ## Use case diagram
 
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
 
-\<next describe here each use case in the UCD>
+![Diagramma caso d'uso](./images/use_case_diagram.jpg)
+
 
 # Use Cases and Scenarios
 
