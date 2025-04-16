@@ -1175,6 +1175,27 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 
 ![Diagramma di classe](./images/class-diagram.jpg)
 
+**Sensore**: <br>
+Dispositivo fisico che misura una quantità, ha un indirizzo mac univoco e comunica tramite porta seriale con il suo gateway, può segnalare se una misura è fuori dai valori di controllo.
+
+**Gateway**: <br>
+Dispositivo fisico che possiede un'interfaccia di rete, connesso fisicamente ad un certo numero di sensori via comunicazione seriale. Riceve i dati dai sensori e li invia alla rete, possiede un MAC univoco.
+
+**Rete**: <br>
+Raggruppamento logico di uno o più gateway individuato da un codice univoco. Il suo scopo è di organizzare e gestire gruppi diversi di dispositivi.
+
+**Utenti**: <br>
+Gli utenti hanno un username e password, per l'autenticazione viene generato un token. Ci sono diversi tipi di utenti:
+- **Amministratore**: ha accesso in lettura e modifica alle funzionalità utente ed a reti, gateway, sensori e misure
+- **Operatore**: ha accesso in lettura e modifica a reti, gateway, sensori e misure
+- **Visualizzatore**: ha accesso solo in lettura a reti, gateway, sensori e misure
+
+**Timestamp** <br>
+I sensori inviano i dati assieme al loro orario locale, che viene poi convertito in UTC dal sistema e immagazzinato come tale
+
+**Statistiche** <br>
+Partendo dai dati e filtrando per un certo periodo temporale sono disponibili i valori di media e varianza, utilizzati per calcolare limiti superiori e inferiori ai valori riportati dai sensori, per rilevare enventuali outliers
+
 # System Design
 
 ![Design di Sistem](./images/System_Design.png)
