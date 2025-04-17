@@ -1207,4 +1207,4 @@ Partendo dai dati e filtrando per un certo periodo temporale sono disponibili i 
 
 # Deployment Diagram
 
-\<describe here deployment diagram>
+![Deployment Diagram](./images/DeploymentDiagram.png)
