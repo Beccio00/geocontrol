@@ -1193,6 +1193,9 @@ Gli utenti hanno un username e password, per l'autenticazione viene generato un 
 **Timestamp** <br>
 I sensori inviano i dati assieme al loro orario locale, che viene poi convertito in UTC dal sistema e immagazzinato come tale
 
+**Misura** <br>
+Valore fisico rilevato da un certo sensore. Può essere esentualmente segnalato come outlier se è una misurazione fuori dagli ordinari limiti
+
 **Statistiche** <br>
 Partendo dai dati e filtrando per un certo periodo temporale sono disponibili i valori di media e varianza, utilizzati per calcolare limiti superiori e inferiori ai valori riportati dai sensori, per rilevare enventuali outliers
 
