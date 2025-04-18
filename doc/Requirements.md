@@ -1,12 +1,11 @@
 # Requirements Document - GeoControl
 
-Date:
+Date: 2025-04-18
 
-Version: V1 - description of Geocontrol as described in the swagger
 
 | Version number | Change |
 | :------------: | :----: |
-|                |        |
+|         V1.0      |    Versione iniziale - Descrizione del sistema Geocontrol basata sulla documentazione swagger   |
 
 
 ## Contents
