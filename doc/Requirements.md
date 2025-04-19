@@ -229,8 +229,6 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 
 ## Non Functional Requirements
 
-\<Describe constraints on functional requirements>
-
 |   ID    | Tipo | Descrizione | Riferito a |
 | :-----: | :--------------------------------: | :---------: | :-------: |
 |  NFR1   |    dominio  | timestamp in formato ISO 8601 |   FR 6.2    |
