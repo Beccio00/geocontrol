@@ -103,7 +103,7 @@ Date: 2025-04-19
   - [Use Case 25 – Visualizzare Anomalie (Outliers)](#use-case-25--visualizzare-anomalie-outliers)
     - [Scenario 25.1 – Visualizzazione anomalie con successo](#scenario-251--visualizzazione-anomalie-con-successo)
     - [Scenario 25.2 – Nessuna anomalia disponibile](#scenario-252--nessuna-anomalia-disponibile)
-  - [| **Passo 4**         | Il sistema non trova alcuna anomalia corrispondente e mostra un messaggio di avviso |](#-passo-4----------il-sistema-non-trova-alcuna-anomalia-corrispondente-e-mostra-un-messaggio-di-avviso-)
+
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
