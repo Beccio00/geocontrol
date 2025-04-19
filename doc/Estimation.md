@@ -1,12 +1,13 @@
 # Project Estimation
 
-Date:
+Date: 19/04/2025
 
-Version:
+Version: 1.0
 
 # Estimation approach
 
-Consider the GeoControl project as described in the swagger, assume that you are going to develop the project INDEPENDENT of the deadlines of the course, and from scratch
+Consideriamo il progetto Geocontrol come desritto nello swagger, si assume che il progetto sia sviluppato da zero senza classi già fornite. 
+
 
 # Estimate by size
 
@@ -14,12 +15,12 @@ Consider the GeoControl project as described in the swagger, assume that you are
 
 |                                                                                                         | Estimate |
 | ------------------------------------------------------------------------------------------------------- | -------- |
-| NC = Estimated number of classes to be developed                                                        |          |
-| A = Estimated average size per class, in LOC                                                            |          |
-| S = Estimated size of project, in LOC (= NC \* A)                                                       |          |
-| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)                    |          |
-| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro)                                     |          |
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |          |
+| NC = Estimated number of classes to be developed                                                        |  20      |
+| A = Estimated average size per class, in LOC                                                            |  110     |
+| S = Estimated size of project, in LOC (= NC \* A)                                                       |   2220   |
+| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)                    |  222     |
+| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro)                                     |   6660   |
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) | 7 days    |
 
 # Estimate by product decomposition
 
@@ -27,12 +28,13 @@ Consider the GeoControl project as described in the swagger, assume that you are
 
 | component name       | Estimated effort (person hours) |
 | -------------------- | ------------------------------- |
-| requirement document |                                 |
-| design document      |                                 |
-| code                 |                                 |
-| unit tests           |                                 |
-| api tests            |                                 |
-| management documents |                                 |
+| requirement document |               30                |
+| design document      |               20                |
+| code                 |               80                |
+| unit tests           |               20                |
+| api tests            |               30                |
+| management documents |               30                |
+| total                |               210               |
 
 # Estimate by activity decomposition
 
