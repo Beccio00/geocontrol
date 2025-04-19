@@ -163,14 +163,14 @@ Geo Control si occupa esclusivamente della gestione, archiviazione e consultazio
 
 #### case 1.
 L'organizzazione privata che possiede una residenza storica sul lago di Como è interessata a monitorare parametri quali umidità e temperatura degli ambienti per mantenere in buono stato le opere d'arte e gli affrischi all'interno. <br>
-Si rivolge a questo sistema che gli ermettera di avere accesso ai dati di tutta l'abitaizone e quindi intervenire nel caso i parametri non siano soddisfacenti 
+Si rivolge a questo sistema che gli permetterà di avere accesso ai dati di tutta l'abitazione e quindi intervenire nel caso in cui parametri non siano soddisfacenti 
 
 #### case 2.
 L'azienda che gestisce un tratto autostradale è interessata a monitorare le condizioni di una parete rocciosa instabile che potrebbe subire distacchi di detriti e mettere quindi in pericolo la circolazione. <br> E' alla ricerca quindi di un sistema come il nostro che garantisce scalabilità e un'alto standard di reliability (max 3 misurazioni all'anno per sensore perse).
 
 #### case 3.
-Un piccolo comune siciliano è interessato al sistema che vorrebbe usare per monitorare lo stato di un edificio storico al centro del loro paese per il rischio di assestamenti naturali del terreno argilloso che potrebbero compromettere alla lunga le fondamenta dell'edificio. <br>
-Sono attratti in particolare dal fatto che il sistema è stato sviluppato su commisisone di un ente pubblico e rispetta le caratteristiche che un ente come il loro cerca.
+Un piccolo comune siciliano è interessato al sistema che vorrebbe usare per monitorare lo stato di un edificio storico al centro del loro paese per il rischio di assestamenti naturali del terreno argilloso che potrebbero alla lunga comprometterne le fondamenta. <br>
+Sono attratti in particolare dal fatto che il sistema è stato sviluppato su commisisone di un ente pubblico e rispetta le caratteristiche che tali organizzazioni cercano.
 
 # Functional and non functional requirements
 
@@ -228,8 +228,6 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 | FR 8 | Sistema di log per gestione degli errori |
 
 ## Non Functional Requirements
-
-\<Describe constraints on functional requirements>
 
 |   ID    | Tipo | Descrizione | Riferito a |
 | :-----: | :--------------------------------: | :---------: | :-------: |
