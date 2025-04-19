@@ -1,11 +1,11 @@
 # Requirements Document - GeoControl
 
-Date: 2025-04-18
+Date: 2025-04-19
 
 
 | Version number | Change |
 | :------------: | :----: |
-|         V1.0      |    Versione iniziale - Descrizione del sistema Geocontrol basata sulla documentazione swagger   |
+|         V1.0      |    Versione definitiva - Descrizione del sistema Geocontrol basata sulla documentazione swagger   |
 
 
 ## Contents
@@ -241,7 +241,7 @@ Sono attratti in particolare dal fatto che il sistema è stato sviluppato su com
 |  NFR6   | usabilità | un utente 'operatore' deve imparare a usare il software in meno di 4 ore di training |   FR 2     |
 |  NFR7   | usabilità | un utente 'amministratore' deve imparare a usare il software in meno di 8 ore di training |   FR 2     |
 |  NFR8   |  sicurezza      | protenzione da accessi esterni non autorizzati | FR1 |
-|  NFR9  |  portabilità     | L’applicazione web deve essere disponibile sui seguenti browser: • Chrome (da versione ...) • Firefox (da versione ...) • Safari • Opera| Tutti  |
+|  NFR9  |  portabilità     | L’applicazione web deve essere disponibile sui seguenti browser: • Chrome (Versione 70 e successive) • Firefox (Versione 68 e successive) • Safari (Versione 11.1 e successive) • Edge (Versione 79 e successive) • Opera (Versione 95 e successive) | Tutti  |
 
 
 
