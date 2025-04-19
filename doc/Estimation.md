@@ -54,6 +54,9 @@ Report here the results of the three estimation approaches. The estimates may di
 
 |                                    | Estimated effort | Estimated duration |
 | ---------------------------------- | ---------------- | ------------------ |
-| estimate by size                   |                  |
-| estimate by product decomposition  |                  |
-| estimate by activity decomposition |                  |
+| estimate by size                   |      222         |       ≈ 7 days     |
+| estimate by product decomposition  |      210         |       ≈ 7 days     |
+| estimate by activity decomposition |                  |                    |
+
+Le differenze sono dovute all'approccio che si è tenuto nello stimare la durata del lavoro da svolgere. Nella prima stima si è partiti dal numero di classi che si pensa di sviluppare, si è fatta una media delle LOC necessarie per implementarne una (tenendo in considerazione la diversa complessità delle diverse classi) e si è infine tradotto in person hour considerando una produttività di 10 LOC per ph. In questa stima non si considera direttamente il tempo impiegato nella gestione e nella scrittura dei vari documenti (nonché dei test), relegando la loro considerazione a 2 soli indici, le linee di codice per person hour e le linee di codice per classe. Agendo anche poco su questi due indici è purtroppo facile sbagliare la stima in uno o nell'altro senso. <br>
+La stima per decomposizione di prodotto riporta un risultato abbastanza simile il che è positivo perché suggerisce l'attendibilità della stime. Questo approccio pone particolare attenzione anche alle altre fasi del progetto, ma rimane abbastanza generica sull tempo necessario a produrre il codice. 
