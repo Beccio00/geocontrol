@@ -46,7 +46,7 @@ Consideriamo il progetto Geocontrol come desritto nello swagger, si assume che i
 
 ###
 
-Insert here Gantt chart with above activities
+![Design di Sistem](./images/diagramma_gantt.png)
 
 # Summary
 
