@@ -8,6 +8,7 @@ import { UserType } from "@models/UserType";
 import { create } from "domain";
 import { Gateway as GatewayDTO } from "@models/dto/Gateway";
 import { GatewayDAO } from "@models/dao/GatewayDAO";
+import { Sensor as SensorDTO } from "@models/dao/SensorDAO";
 
 export function createErrorDTO(
   code: number,
@@ -55,8 +56,8 @@ function removeNullAttributes<T>(dto: T): Partial<T> {
 }
 
 export function createNetworkDTO(
-  code: string,
-  name: string,
+  code?: string,
+  name?: string,
   description?: string,
   gateways?: Array<GatewayDTO>
 ): NetworkDTO {
@@ -69,8 +70,33 @@ export function createNetworkDTO(
 } 
 
 export function mapNetworkDAOToDTO(networkDAO: NetworkDAO): NetworkDTO {
-  return createNetworkDTO( networkDAO.code,
+  return createNetworkDTO( 
+     networkDAO.code,
      networkDAO.name, 
      networkDAO.description, 
-     networkDAO.gateways.map((g: GatewayDAO) => g.mapGatewayDAOToDTO(g)) ); 
+     networkDAO.gateways?.map((g: GatewayDAO) => g.mapGatewayDAOToDTO(g)) ); 
+}
+
+
+export function createGatewayDTO(
+  macAddress?: string,
+  name?: string,
+  description?: string,
+  sensors?: Array<SensorDTO>
+): GatewayDTO {
+  return removeNullAttributes({
+    macAddress,
+    name,
+    description,
+    sensors
+  }) as GatewayDTO;
+}
+
+export function mapGatewayDAOToDTO(gatewayDAO: GatewayDAO): GatewayDTO {
+  return createGatewayDTO(
+    gatewayDAO.macAddress,
+    gatewayDAO.name,
+    gatewayDAO.description,
+    gatewayDAO.sensors?.map((s) => s.mapSensorDAOToDTO(s))
+  );
 }
