@@ -7,11 +7,11 @@ import { findOrThrowNotFound, throwConflictIfFound } from "@utils";
 
 export class GatewayRepository {
   private repo: Repository<GatewayDAO>;
-  private networkRepo: NetworkRepostory;
+  private networkRepo: NetworkRepository;
 
   constructor() {
     this.repo = AppDataSource.getRepository(GatewayDAO);
-    this.networkRepo = new NetworkRepostory();
+    this.networkRepo = new NetworkRepository();
   }
 
   async getAllGateways(networkCode: string): Promise<GatewayDAO[]> {

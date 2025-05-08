@@ -19,6 +19,8 @@ export class GatewayDAO {
   })
   sensors: SensorDAO[];
 
+  // FIXME: this is a workaround for the many-to-one relationship with NetworkDAO
+
   @ManyToOne(() => Network, (network) => network.gateways, { nullable: false })
   network: Network;
 
