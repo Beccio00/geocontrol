@@ -64,9 +64,10 @@ export class NetworkRepostory {
             code: newCode || old.code,
             name: newName || old.name,
             description: newDescription || old.description,
-        });
-            
+        });    
     }
-    
 
+    async deleteNetwork(code: string): Promise<void> {
+        await this.repo.remove(await this.getNetworkByCode(code));
+    }
 }

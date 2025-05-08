@@ -7,7 +7,8 @@ import {
   getAllNetworks,
   createNetwork,
   getNetwork,
-  updateNetwork
+  updateNetwork,
+  deleteNetwork
 } from "@controllers/networkController"
 import { NetworkFromJSON } from "@models/dto/Network";
 
@@ -44,7 +45,7 @@ router.get("/:networkCode", authenticateUser([UserType.Admin, UserType.Operator,
 });
 
 // Update a network (Admin & Operator)
-router.patch("/:networkCode", async (req, res, next) => {
+router.patch("/:networkCode", authenticateUser([UserType.Admin, UserType.Operator]), async (req, res, next) => {
   try {
     await updateNetwork(req.params.networkCode, NetworkFromJSON(req.body));
     res.status(204).send();
@@ -54,8 +55,13 @@ router.patch("/:networkCode", async (req, res, next) => {
 });
 
 // Delete a network (Admin & Operator)
-router.delete("/:networkCode", (req, res, next) => {
-  throw new AppError("Method not implemented", 500);
+router.delete("/:networkCode", authenticateUser([UserType.Admin, UserType.Operator]), async(req, res, next) => {
+  try {
+    await deleteNetwork(req.params.networkCode);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;
