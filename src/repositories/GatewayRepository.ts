@@ -1,7 +1,8 @@
 import { AppDataSource } from "@database";
 import { Repository } from "typeorm";
+
 import { GatewayDAO } from "@dao/GatewayDAO";
-import { NetworkRepostory } from "@repositories/NetworkRepository";
+import { NetworkRepository } from "@repositories/NetworkRepository";
 import { findOrThrowNotFound, throwConflictIfFound } from "@utils";
 
 export class GatewayRepository {

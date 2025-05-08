@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from "typeorm";
 import { SensorDAO } from "./SensorDAO";
 import { NetworkDAO } from "./Network";
 
