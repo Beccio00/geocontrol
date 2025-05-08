@@ -8,7 +8,7 @@ import { UserType } from "@models/UserType";
 import { create } from "domain";
 import { Gateway as GatewayDTO } from "@models/dto/Gateway";
 import { GatewayDAO } from "@models/dao/GatewayDAO";
-import { Sensor as SensorDTO } from "@models/dao/SensorDAO";
+
 
 export function createErrorDTO(
   code: number,
@@ -74,7 +74,7 @@ export function mapNetworkDAOToDTO(networkDAO: NetworkDAO): NetworkDTO {
      networkDAO.code,
      networkDAO.name, 
      networkDAO.description, 
-     networkDAO.gateways?.map((g: GatewayDAO) => g.mapGatewayDAOToDTO(g)) ); 
+     networkDAO.gateways?.map((g) => mapGatewayDAOToDTO(g)) ); 
 }
 
 
@@ -82,7 +82,7 @@ export function createGatewayDTO(
   macAddress?: string,
   name?: string,
   description?: string,
-  sensors?: Array<SensorDTO>
+  sensors?: Array<String> //FIXME: Change to SensorDTO
 ): GatewayDTO {
   return removeNullAttributes({
     macAddress,
@@ -97,6 +97,5 @@ export function mapGatewayDAOToDTO(gatewayDAO: GatewayDAO): GatewayDTO {
     gatewayDAO.macAddress,
     gatewayDAO.name,
     gatewayDAO.description,
-    gatewayDAO.sensors?.map((s) => s.mapSensorDAOToDTO(s))
   );
 }

@@ -6,7 +6,8 @@ import { error } from "console";
 import { 
   getAllNetworks,
   createNetwork,
-  getNetwork
+  getNetwork,
+  updateNetwork
 } from "@controllers/networkController"
 import { NetworkFromJSON } from "@models/dto/Network";
 

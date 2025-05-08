@@ -1,15 +1,19 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
+import { GatewayDAO } from "./GatewayDAO";
 
 @Entity("networks")
 export class NetworkDAO {
     @PrimaryColumn({ nullable: false })
     code: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     name: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     description: string;
 
-    //TODO: Add relation to GatewayDAO
+    @OneToMany(() => GatewayDAO, (gateway) => gateway.network, { 
+        cascade: true 
+    })
+    gateways: GatewayDAO[];
 }
