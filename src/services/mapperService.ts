@@ -3,6 +3,8 @@ import { User as UserDTO } from "@dto/User";
 import { UserDAO } from "@models/dao/UserDAO";
 import { ErrorDTO } from "@models/dto/ErrorDTO";
 import { UserType } from "@models/UserType";
+import { Sensor as SensorDTO } from "@models/dto/Sensor";
+import { SensorDAO } from "@models/dao/SensorDAO";
 
 export function createErrorDTO(
   code: number,
@@ -47,4 +49,24 @@ function removeNullAttributes<T>(dto: T): Partial<T> {
         (!Array.isArray(value) || value.length > 0)
     )
   ) as Partial<T>;
+}
+
+export function createSensorDTO(
+  macAddress? : string,
+  name?: string,
+  description?: string,
+  variable?: string,
+  unit?: string,
+): SensorDTO {
+  return removeNullAttributes({
+    macAddress,
+    name,
+    description,
+    variable,
+    unit
+  }) as SensorDTO;
+}
+
+export function mapSensorDAOToDTO(SensorDAO: SensorDAO): SensorDTO {
+  return createSensorDTO(SensorDAO.macAddress, SensorDAO.name, SensorDAO.description, SensorDAO.variable, SensorDAO.unit);
 }
