@@ -35,7 +35,6 @@ router.get("", authenticateUser([UserType.Admin, UserType.Operator, UserType.Vie
   }
 });
 
-
 // Create a new gateway (Admin & Operator)
 router.post("", (req, res, next) => {
   throw new AppError("Method not implemented", 500);
