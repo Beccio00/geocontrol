@@ -1,28 +1,25 @@
-import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import { SensorDAO } from "@dao/SensorDAO";
-import { NetworkDAO } from "@dao/NetworkDAO";
+import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { NetworkDAO as Network } from '@dao/NetworkDAO';
+import { SensorDAO as Sensor } from "@dao/SensorDAO";
 
-@Entity("gateways")
+@Entity()
 export class GatewayDAO {
-  @PrimaryColumn({ nullable: false })
+  @PrimaryColumn()
   macAddress: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   description: string;
 
-  @OneToMany(() => SensorDAO, (sensor) => sensor.gateway, {
+  @ManyToOne(() => Network, network => network.gateways)
+  @JoinColumn({ name: 'networkCode' })
+  network: Network;
+
+  @OneToMany(() => Sensor, sensor => sensor.gateway, {
     cascade: true,
     eager: true, // Optional: auto-load sensors with gateways
   })
-  sensors: SensorDAO[];
-
-  // FIXME: this is a workaround for the many-to-one relationship with NetworkDAO
-
-  @ManyToOne(() => Network, (network) => network.gateways, { nullable: false })
-  @JoinColumn({ name: "networkId" }) // foreign key name ??? FIXME
-  network: NetworkDAO;
-
+  sensors: Sensor[];
 }
