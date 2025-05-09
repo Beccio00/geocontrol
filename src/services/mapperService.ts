@@ -50,7 +50,7 @@ function removeNullAttributes<T>(dto: T): Partial<T> {
       ([_, value]) =>
         value !== null &&
         value !== undefined &&
-        (!Array.isArray(value) || value.length > 0)
+        (!Array.isArray(value) || value.length >= 0)  //FIXME: set value.length > 0
     )
   ) as Partial<T>;
 }
@@ -74,7 +74,8 @@ export function mapNetworkDAOToDTO(networkDAO: NetworkDAO): NetworkDTO {
      networkDAO.code,
      networkDAO.name, 
      networkDAO.description, 
-     networkDAO.gateways?.map((g) => mapGatewayDAOToDTO(g)) ); 
+     networkDAO.gateways 
+    ); 
 }
 
 

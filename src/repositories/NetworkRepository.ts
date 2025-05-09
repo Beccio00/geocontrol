@@ -13,7 +13,8 @@ export class NetworkRepostory {
     }
 
     getAllNetworks(): Promise<NetworkDAO[]> {
-        return this.repo.find();
+        return this.repo.find({relations: { gateways: true }});
+
     }
 
     async createNetwork(
