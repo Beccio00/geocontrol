@@ -85,7 +85,7 @@ export function createGatewayDTO(
   macAddress?: string,
   name?: string,
   description?: string,
-  sensors?: Array<String> //FIXME: Change to SensorDTO
+  sensors?: Array<SensorDTO> 
 ): GatewayDTO {
   return removeNullAttributes({
     macAddress,

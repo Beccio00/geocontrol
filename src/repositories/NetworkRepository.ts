@@ -5,7 +5,7 @@ import { UserType } from "@models/UserType";
 import { findOrThrowNotFound, throwConflictIfFound } from "@utils";
 import { Gateway } from "@models/dto/Gateway";
 
-export class NetworkRepostory {
+export class NetworkRepository {
     private repo: Repository<NetworkDAO>
 
     constructor() {
