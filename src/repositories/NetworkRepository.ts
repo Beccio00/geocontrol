@@ -52,20 +52,30 @@ export class NetworkRepostory {
         newDescription: string
     ): Promise<NetworkDAO> {
         const old: NetworkDAO = findOrThrowNotFound (
-            await this.repo.find({ where: { code } }),
+            await this.repo.find({ 
+                where: { code }, 
+                relations: { gateways: true },
+            }),
             () => true,
             `Network with code '${code}' not found`
         );
-        throwConflictIfFound(
-            await this.repo.find({ where: { code: newCode } }),
-            () => true,
-            `Network with code '${newCode}' already exists`
-        );
-        return this.repo.save({
-            code: newCode || old.code,
-            name: newName || old.name,
-            description: newDescription || old.description,
-        });    
+
+        if (newCode !== code) {
+            throwConflictIfFound(
+                await this.repo.find({ where: { code: newCode } }),
+                () => true,
+                `Network with code '${newCode}' already exists`
+            );
+
+            await this.repo.remove(old);
+        }
+
+        old.code = newCode || code;
+        old.name = newName || old.name;
+        old.description = newDescription || old.description;
+
+
+        return this.repo.save(old);    
     }
 
     async deleteNetwork(code: string): Promise<void> {
