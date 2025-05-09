@@ -13,6 +13,7 @@ import { GatewayFromJSON } from "@models/dto/Gateway";
 
 const router = Router({ mergeParams: true });
 
+/*
 // Get all gateways (Any authenticated user)
 router.get("", (req, res, next) => {
   try {
@@ -23,8 +24,8 @@ router.get("", (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
-/* 
+});*/
+ 
 router.get("", authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer]), async (req, res, next) => {
   try {
     const networkCode = req.params.networkCode;
@@ -33,7 +34,7 @@ router.get("", authenticateUser([UserType.Admin, UserType.Operator, UserType.Vie
     next(error);
   }
 });
- */
+
 
 // Create a new gateway (Admin & Operator)
 router.post("", (req, res, next) => {
