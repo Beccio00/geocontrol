@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import { SensorDAO } from "./SensorDAO";
-import { NetworkDAO } from "./Network";
+import { SensorDAO } from "@dao/SensorDAO";
+import { NetworkDAO } from "@dao/NetworkDAO";
 
 @Entity("gateways")
 export class GatewayDAO {
@@ -22,6 +22,7 @@ export class GatewayDAO {
   // FIXME: this is a workaround for the many-to-one relationship with NetworkDAO
 
   @ManyToOne(() => Network, (network) => network.gateways, { nullable: false })
-  network: Network;
+  @JoinColumn({ name: "networkId" }) // foreign key name ??? FIXME
+  network: NetworkDAO;
 
 }
