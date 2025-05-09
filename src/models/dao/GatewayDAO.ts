@@ -17,6 +17,9 @@ export class GatewayDAO {
   @JoinColumn({ name: 'networkCode' })
   network: Network;
 
-  @OneToMany(() => Sensor, sensor => sensor.gateway)
+  @OneToMany(() => Sensor, sensor => sensor.gateway, {
+    cascade: true,
+    eager: true, // Optional: auto-load sensors with gateways
+  })
   sensors: Sensor[];
 }
