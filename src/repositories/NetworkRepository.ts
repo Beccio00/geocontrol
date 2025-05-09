@@ -70,7 +70,7 @@ export class NetworkRepostory {
             await this.repo.remove(old);
         }
 
-        old.code = newCode || code;
+        old.code = newCode || old.code;
         old.name = newName || old.name;
         old.description = newDescription || old.description;
 
