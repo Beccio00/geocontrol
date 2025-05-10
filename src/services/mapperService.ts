@@ -10,6 +10,10 @@ import { SensorDAO } from "@models/dao/SensorDAO";
 import { create } from "domain";
 import { Gateway as GatewayDTO } from "@models/dto/Gateway";
 import { GatewayDAO } from "@models/dao/GatewayDAO";
+import { Measurement as MeasurementDTO } from "@dto/Measurement";
+import { Measurements as MeasurementsDTO } from "@dto/Measurements";
+import { MeasurementDAO } from "@dao/MeasurementDAO";
+import { Stats } from "@dto/Stats";
 
 
 export function createErrorDTO(
@@ -121,4 +125,20 @@ export function createSensorDTO(
 
 export function mapSensorDAOToDTO(SensorDAO: SensorDAO): SensorDTO {
   return createSensorDTO(SensorDAO.macAddress, SensorDAO.name, SensorDAO.description, SensorDAO.variable, SensorDAO.unit);
+}
+
+export function createMeasurementDTO(
+  createdAt?: Date,
+  value?: number,
+  isOutlier?: boolean
+): MeasurementDTO {
+  return removeNullAttributes({
+    createdAt,
+    value,
+    isOutlier
+  }) as MeasurementDTO;
+}
+
+export function mapMeasurementDAOToDTO(dao: MeasurementDAO): MeasurementDTO {
+  return createMeasurementDTO(dao.createdAt, dao.value, dao.isOutlier);
 }
