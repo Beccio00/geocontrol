@@ -10,14 +10,7 @@ export async function getAllGateways(networkCode: string): Promise<GatewayDTO[]>
 
 export async function createGateway(networkCode: string, gatewayDto: GatewayDTO): Promise<void> {
     const gatewayRepo = new GatewayRepository();
-    const gatewayData: Partial<GatewayDAO> = {
-        macAddress: gatewayDto.macAddress,
-        name: gatewayDto.name,
-        description: gatewayDto.description,
-        sensors: gatewayDto.sensors
-    };
-    const createdGateway = await gatewayRepo.createGateway(networkCode, gatewayData);
-    return mapGatewayDAOToDTO(createdGateway);
+    await gatewayRepo.createGateway(networkCode, gatewayDto.macAddress, gatewayDto.name, gatewayDto.description, gatewayDto.sensors);
  }
 
 export async function getGateway(networkCode: string, macAddress: string): Promise<GatewayDTO> {
@@ -26,9 +19,9 @@ export async function getGateway(networkCode: string, macAddress: string): Promi
     return mapGatewayDAOToDTO(gateway);
   }
 
-export async function updateGateway(networkCode: string, oldMac: string, updatedData: Partial<GatewayDTO>): Promise<void> {
+export async function updateGateway(networkCode: string, oldMac: string, gatewayDto: GatewayDTO): Promise<void> {
     const gatewayRepo = new GatewayRepository();
-    await gatewayRepo.updateGateway(networkCode, oldMac, updatedData);
+    await gatewayRepo.updateGateway(networkCode, oldMac, gatewayDto?.macAddress, gatewayDto?.name, gatewayDto?.description);
   }
 
 export async function deleteGateway(networkCode: string, macAddress: string): Promise<void> {
