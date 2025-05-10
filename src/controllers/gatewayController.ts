@@ -19,9 +19,9 @@ export async function getGateway(networkCode: string, macAddress: string): Promi
     return mapGatewayDAOToDTO(gateway);
   }
 
-export async function updateGateway(networkCode: string, oldMac: string, updatedData: Partial<GatewayDTO>): Promise<void> {
+export async function updateGateway(networkCode: string, oldMac: string, gatewayDto: GatewayDTO): Promise<void> {
     const gatewayRepo = new GatewayRepository();
-    await gatewayRepo.updateGateway(networkCode, oldMac, updatedData);
+    await gatewayRepo.updateGateway(networkCode, oldMac, gatewayDto?.macAddress, gatewayDto?.name, gatewayDto?.description);
   }
 
 export async function deleteGateway(networkCode: string, macAddress: string): Promise<void> {

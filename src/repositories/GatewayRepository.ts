@@ -3,7 +3,7 @@ import { Repository } from "typeorm";
 import { GatewayDAO } from "@dao/GatewayDAO";
 import { NetworkDAO } from "@dao/NetworkDAO";
 import { findOrThrowNotFound, throwConflictIfFound } from "@utils";
-import { SensorDAO } from "@models/dao/SensorDAO";
+import { Sensor } from "@models/dto/Sensor";
 
 export class GatewayRepository {
   private repo: Repository<GatewayDAO>;
@@ -16,7 +16,7 @@ export class GatewayRepository {
 
   async getAllGateways(networkCode: string): Promise<GatewayDAO[]> {
     //validazione networkCode
-    await findOrThrowNotFound(
+    findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } }),
       () => true,
       `Network with code '${networkCode}' not found `
@@ -26,12 +26,12 @@ export class GatewayRepository {
 
   async getGateway(networkCode: string, macAddress: string): Promise<GatewayDAO> {
     //validazione networkCode
-    await findOrThrowNotFound(
+    findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } }),
       () => true,
       `Network with code '${networkCode}' not found `
     );
-    return await findOrThrowNotFound(
+    return findOrThrowNotFound(
         await this.repo.find({
             where: {
                 macAddress: macAddress,
@@ -49,7 +49,7 @@ export class GatewayRepository {
     macAddress: string,
     name: string,
     description: string,
-    sensors: Array<SensorDAO> ): Promise<GatewayDAO> {
+    sensor: Array<Sensor> ): Promise<GatewayDAO> {
     //validazione networkCode
     const network = await findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } }),
@@ -58,7 +58,7 @@ export class GatewayRepository {
     ); 
 
     // Check for MAC conflict within this network
-    await throwConflictIfFound(
+    throwConflictIfFound(
       await this.repo.find({ where: { macAddress}}),
       () => true,
       `Gateway with MAC '${macAddress}' already exists in network '${networkCode}'`
@@ -68,8 +68,7 @@ export class GatewayRepository {
       macAddress: macAddress,
       name: name,
       description: description,
-      sensors: sensors,
-      network: network
+      sensors: sensor
     });
 
     return this.repo.save(newGateway);
@@ -81,7 +80,7 @@ export class GatewayRepository {
     newName: string,
     newDescription: string,): Promise<GatewayDAO> {
     //validazione networkCode
-    await findOrThrowNotFound(
+    findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } }),
       () => true,
       `Network with code '${networkCode}' not found `
@@ -103,7 +102,7 @@ export class GatewayRepository {
 
     // Check for MAC conflict within this network
     if (newMacAddress && newMacAddress !== oldMac) {
-      await throwConflictIfFound(
+      throwConflictIfFound(
         await this.repo.find({ where: { macAddress: newMacAddress, network: { code: networkCode }} }),
         () => true,
         `Gateway with MAC '${newMacAddress}' already exists in network '${networkCode}'`
