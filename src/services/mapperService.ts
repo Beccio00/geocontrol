@@ -100,6 +100,7 @@ export function mapGatewayDAOToDTO(gatewayDAO: GatewayDAO): GatewayDTO {
     gatewayDAO.macAddress,
     gatewayDAO.name,
     gatewayDAO.description,
+    gatewayDAO.sensors
   );
 }
 

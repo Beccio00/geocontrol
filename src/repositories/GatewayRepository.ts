@@ -68,6 +68,7 @@ export class GatewayRepository {
       macAddress: macAddress,
       name: name,
       description: description,
+      sensors: sensors,
       network: network
     });
 

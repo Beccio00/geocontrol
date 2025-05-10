@@ -10,14 +10,7 @@ export async function getAllGateways(networkCode: string): Promise<GatewayDTO[]>
 
 export async function createGateway(networkCode: string, gatewayDto: GatewayDTO): Promise<void> {
     const gatewayRepo = new GatewayRepository();
-    const gatewayData: Partial<GatewayDAO> = {
-        macAddress: gatewayDto.macAddress,
-        name: gatewayDto.name,
-        description: gatewayDto.description,
-        sensors: gatewayDto.sensors
-    };
-    const createdGateway = await gatewayRepo.createGateway(networkCode, gatewayData);
-    return mapGatewayDAOToDTO(createdGateway);
+    await gatewayRepo.createGateway(networkCode, gatewayDto.macAddress, gatewayDto.name, gatewayDto.description, gatewayDto.sensors);
  }
 
 export async function getGateway(networkCode: string, macAddress: string): Promise<GatewayDTO> {
