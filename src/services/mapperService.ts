@@ -143,3 +143,56 @@ export function createMeasurementDTO(
 export function mapMeasurementDAOToDTO(dao: MeasurementDAO): MeasurementDTO {
   return createMeasurementDTO(dao.createdAt, dao.value, dao.isOutlier);
 }
+
+
+export function createMeasurementsDTO(
+  sensorMacAddress?: string,
+  measurements?: MeasurementDTO[],
+  stats?: Stats
+): MeasurementsDTO {
+  return removeNullAttributes({
+    sensorMacAddress,
+    measurements,
+    stats,
+  }) as MeasurementsDTO;
+}
+
+export function mapMeasurementsToDTO(
+  sensorMacAddress: string,
+  measurementDAOs: MeasurementDAO[],
+  stats?: Stats
+): MeasurementsDTO {
+  return createMeasurementsDTO(
+    sensorMacAddress,
+    measurementDAOs.map(mapMeasurementDAOToDTO),
+    stats
+  );
+}
+
+export function createStatsDTO(
+  mean?: number,
+  variance?: number,
+  upperThreshold?: number,
+  lowerThreshold?: number
+): Stats {
+  return removeNullAttributes({
+    mean,
+    variance,
+    upperThreshold,
+    lowerThreshold,
+  }) as Stats;
+}
+
+export function mapStatsToDTO(stats: {
+  mean: number;
+  variance: number;
+  upperThreshold: number;
+  lowerThreshold: number;
+}): Stats {
+  return createStatsDTO(
+    stats.mean,
+    stats.variance,
+    stats.upperThreshold,
+    stats.lowerThreshold
+  );
+}

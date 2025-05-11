@@ -83,4 +83,45 @@ export class MeasurementRepository {
       relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
     });
   }
+
+  // Retrieve measurements for a vector of sensors in a network
+  async getMeasurementsBySensorsAndNetwork(
+    networkCode: string,
+    sensorMacs: string[]
+  ): Promise<MeasurementDAO[]> {
+    // Validate each sensor in sensorsMacs array exist and is in the network
+    await Promise.all(
+      sensorMacs.map(async (sensorMac) => {findOrThrowNotFound(
+        await this.sensorRepo.find({
+          where: {
+            macAddress: sensorMac,
+            gateway: {
+              network: { code: networkCode },
+            },
+          },
+          relations: ["gateway", "gateway.network"],
+        }),
+        () => true,
+        `Sensor with MAC '${sensorMac}' not found in network '${networkCode}'`
+        )}
+      )
+    );
+      // Retrieve measurements for each sensor
+      const measurements = await Promise.all(
+      sensorMacs.map(async (sensorMac) => {
+        return this.repo.find({
+          where: {
+            sensor: {
+              macAddress: sensorMac,
+            },
+          },
+          relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
+          });
+        })
+      );
+      return measurements.flat();
+  }
+
+
+  
 }
