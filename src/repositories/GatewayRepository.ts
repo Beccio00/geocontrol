@@ -67,7 +67,8 @@ export class GatewayRepository {
       macAddress: macAddress,
       name: name,
       description: description,
-      sensors: sensor
+      sensors: sensor,
+      network: network
     });
 
     return this.repo.save(newGateway);
