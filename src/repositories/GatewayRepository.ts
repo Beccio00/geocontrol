@@ -21,7 +21,7 @@ export class GatewayRepository {
       () => true,
       `Network with code '${networkCode}' not found `
     );   
-    return this.repo.find({ where: { network: {code: networkCode} }, relations: ['network','sensors'] });
+    return this.repo.find({ where: { network: {code: networkCode} }});
   }
 
   async getGateway(networkCode: string, macAddress: string): Promise<GatewayDAO> {
@@ -36,8 +36,7 @@ export class GatewayRepository {
             where: {
                 macAddress: macAddress,
                 network: { code: networkCode },
-            },
-            relations: ['network', 'sensors'],
+            }
         }),
         () => true,
         `Gateway with mac '${macAddress}' not found in network '${networkCode}'`
@@ -93,8 +92,7 @@ export class GatewayRepository {
           network: {
             code: networkCode
           }
-        },
-        relations: ['network']
+        }
       }),
       () => true,
       `Gateway with MAC '${oldMac}' not found in network '${networkCode}'`

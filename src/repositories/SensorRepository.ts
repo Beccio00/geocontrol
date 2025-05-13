@@ -29,8 +29,7 @@ export class SensorRepository {
         where: {
           macAddress: gatewayMac,
           network: { code: networkCode },
-        },
-        relations: ['network'],
+        }
       }),
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`
@@ -43,8 +42,7 @@ export class SensorRepository {
             code: networkCode
           }
         }
-      },
-      relations: ['gateway', 'gateway.network'], 
+      }
     });
   }
 
@@ -70,8 +68,7 @@ export class SensorRepository {
         where: {
           macAddress: gatewayMac,
           network: { code: networkCode },
-        },
-        relations: ['network'],
+        }
       }),
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`
@@ -106,8 +103,7 @@ export class SensorRepository {
         where: {
           macAddress: gatewayMac,
           network: { code: networkCode },
-        },
-        relations: ['network'],
+        }
       }),
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`
@@ -122,8 +118,7 @@ export class SensorRepository {
               code: networkCode
             }
           }
-        },
-        relations: ['gateway', 'gateway.network']
+        }
       }),
       () => true,
       `Sensor with macAddress '${sensorMac}' not found in gateway '${gatewayMac}' and network '${networkCode}'`    
@@ -152,8 +147,7 @@ export class SensorRepository {
         where: {
           macAddress: gatewayMac,
           network: { code: networkCode },
-        },
-        relations: ['network'],
+        }
       }),
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`

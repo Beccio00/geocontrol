@@ -2,24 +2,28 @@ import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany, JoinColumn } from 
 import { NetworkDAO as Network } from '@dao/NetworkDAO';
 import { SensorDAO as Sensor } from "@dao/SensorDAO";
 
-@Entity()
+@Entity("gateways")
 export class GatewayDAO {
   @PrimaryColumn()
   macAddress: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   description: string;
 
-  @ManyToOne(() => Network, network => network.gateways)
+  @ManyToOne(() => Network, network => network.gateways,{      
+      onDelete:"CASCADE",
+      onUpdate:"CASCADE"
+  })
   @JoinColumn({ name: 'networkCode' })
   network: Network;
 
   @OneToMany(() => Sensor, sensor => sensor.gateway, {
-    cascade: true,
-    eager: true, // Optional: auto-load sensors with gateways
+    eager:true,
+    onDelete:"CASCADE",
+    onUpdate:"CASCADE" 
   })
   sensors: Sensor[];
 }
