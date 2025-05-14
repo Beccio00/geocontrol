@@ -30,6 +30,8 @@ export class SensorDAO {
   @OneToMany(() => MeasurementDAO, (measurement) => measurement.sensor, {
     cascade: true,
     eager: false, 
+    onDelete:"CASCADE",
+    onUpdate:"CASCADE"
   })
   measurements: MeasurementDAO[];
 }
