@@ -1,8 +1,9 @@
 import { AppDataSource } from "@database";
-import { Repository } from "typeorm";
+import { Repository, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { MeasurementDAO } from "@dao/MeasurementDAO";
 import { SensorDAO } from "@dao/SensorDAO";
 import { findOrThrowNotFound } from "@utils";
+import { NetworkDAO } from "@models/dao/NetworkDAO";
 
 export class MeasurementRepository {
   private repo: Repository<MeasurementDAO>;
@@ -41,7 +42,6 @@ export class MeasurementRepository {
     const measurement = this.repo.create({
       value,
       createdAt,
-      isOutlier,
       sensor,
     });
 
@@ -51,9 +51,11 @@ export class MeasurementRepository {
   async getMeasurementsBySensor(
     networkCode: string,
     gatewayMac: string,
-    sensorMac: string
+    sensorMac: string,
+    startDate?: Date,
+    endDate?: Date
   ): Promise<MeasurementDAO[]> {
-    // Validate the sensor exists
+    // Validate the sensor exists within the specified network and gateway
     findOrThrowNotFound(
       await this.sensorRepo.find({
         where: {
@@ -79,49 +81,45 @@ export class MeasurementRepository {
             network: { code: networkCode },
           },
         },
+        ...(startDate && { createdAt: MoreThanOrEqual(startDate) }), // Check startDate if provided
+        ...(endDate && { createdAt: LessThanOrEqual(endDate) }),        // Check endDate if provided
       },
       relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
     });
   }
 
-  // Retrieve measurements for a vector of sensors in a network
-  async getMeasurementsBySensorsAndNetwork(
+  async getMeasurementsBySensorInNetworkWithNoError( 
     networkCode: string,
-    sensorMacs: string[]
-  ): Promise<MeasurementDAO[]> {
-    // Validate each sensor in sensorsMacs array exist and is in the network
-    await Promise.all(
-      sensorMacs.map(async (sensorMac) => {findOrThrowNotFound(
-        await this.sensorRepo.find({
-          where: {
-            macAddress: sensorMac,
-            gateway: {
-              network: { code: networkCode },
-            },
+    sensorMac: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<MeasurementDAO[] | null> {
+    //return measurements if the sensor exists in the network, otherwise return null
+    const sensor = await this.sensorRepo.findOne({
+      where: {
+        macAddress: sensorMac,
+        gateway: {
+          network: { code: networkCode },
+        },
+      },
+      relations: ["gateway", "gateway.network"],
+    });
+    if (!sensor) {
+      return null; // Sensor not found in the network
+    }
+    return this.repo.find({
+      where: {
+        sensor: {
+          macAddress: sensorMac,
+          gateway: {
+            network: { code: networkCode },
           },
-          relations: ["gateway", "gateway.network"],
-        }),
-        () => true,
-        `Sensor with MAC '${sensorMac}' not found in network '${networkCode}'`
-        )}
-      )
-    );
-      // Retrieve measurements for each sensor
-      const measurements = await Promise.all(
-      sensorMacs.map(async (sensorMac) => {
-        return this.repo.find({
-          where: {
-            sensor: {
-              macAddress: sensorMac,
-            },
-          },
-          relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
-          });
-        })
-      );
-      return measurements.flat();
+        },
+        ...(startDate && { createdAt: MoreThanOrEqual(startDate) }), // Check startDate if provided
+        ...(endDate && { createdAt: LessThanOrEqual(endDate) }),        // Check endDate if provided
+      },
+      relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
+    });
   }
 
-
-  
 }

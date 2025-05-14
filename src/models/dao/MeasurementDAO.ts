@@ -9,11 +9,8 @@ export class MeasurementDAO {
   @Column({ type: "float", nullable: false })
   value: number;
 
-  @Column({ type: "timestamp", nullable: false })
+  @Column({ type: "datetime", nullable: false })
   createdAt: Date;
-
-  @Column({ type: "boolean", nullable: true })
-  isOutlier?: boolean;
 
   @ManyToOne(() => SensorDAO, (sensor) => sensor.measurements, { nullable: false })
   sensor: SensorDAO;

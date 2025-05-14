@@ -140,10 +140,18 @@ export function createMeasurementDTO(
   }) as MeasurementDTO;
 }
 
-export function mapMeasurementDAOToDTO(dao: MeasurementDAO): MeasurementDTO {
-  return createMeasurementDTO(dao.createdAt, dao.value, dao.isOutlier);
-}
+export function mapMeasurementDAOToDTO(
+  dao: MeasurementDAO,
+  stats?: Stats
+): MeasurementDTO {
+  // Calculate isOutlier dynamically if stats are provided
+  const isOutlier =
+    stats &&
+    (dao.value > stats.upperThreshold || dao.value < stats.lowerThreshold);
 
+  // Use createMeasurementDTO to construct the DTO
+  return createMeasurementDTO(dao.createdAt, dao.value, isOutlier);
+}
 
 export function createMeasurementsDTO(
   sensorMacAddress?: string,
@@ -164,7 +172,7 @@ export function mapMeasurementsToDTO(
 ): MeasurementsDTO {
   return createMeasurementsDTO(
     sensorMacAddress,
-    measurementDAOs.map(mapMeasurementDAOToDTO),
+    measurementDAOs,
     stats
   );
 }

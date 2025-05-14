@@ -1,27 +1,45 @@
 import {Measurement} from "@dto/Measurement";
 import {MeasurementRepository} from "@repositories/MeasurementRepository";
 import {mapMeasurementDAOToDTO} from "@services/mapperService";
-import {calculateStats} from "@services/statsService";
+import {calculateStats, processMeasurements} from "@services/statsService";
 import {Stats} from "@dto/Stats";
+import { Measurements } from "@models/dto/Measurements";
+import { NetworkRepository } from "@repositories/NetworkRepository";
 
 // Function to get all measurements from an array of sensors in a network
 export async function getMeasurementsBySensorsAndNetwork(
     networkCode: string,
     sensorMacs: string[]
-): Promise<Measurement[]> {
+): Promise<Measurements[]> {
+    //validate the networkCode exists or throw not found error
+    const networkRepo= new NetworkRepository();
+    const network = await networkRepo.getNetworkByCode(networkCode);
+
+    const processedMeasurements=[];
     const measurementRepo = new MeasurementRepository();
-    const measurements = await measurementRepo.getMeasurementsBySensorsAndNetwork(networkCode, sensorMacs);
-    return measurements.map(mapMeasurementDAOToDTO);
+    //for each sensor in the array, get the measurements from the database
+    await Promise.all(sensorMacs.map(async (sensorMac) => { 
+        const measurementDAOs=measurementRepo.getMeasurementsBySensorInNetworkWithNoError(networkCode, sensorMac);
+        if(measurementDAOs){
+            processedMeasurements.push(processMeasurements((await (measurementDAOs)).map((dao) => mapMeasurementDAOToDTO(dao)), sensorMac));
+        }
+    }));
+
+    return processedMeasurements
+
 }
 
 export async function getMeasurementsBySensor(
     networkCode: string,
     gatewayMac: string,
-    sensorMac: string
-): Promise<Measurement[]> {
+    sensorMac: string,
+    startDate?: Date,
+    endDate?: Date
+): Promise<Measurements> {
     const measurementRepo = new MeasurementRepository();
-    const measurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac);
-    return measurements.map(mapMeasurementDAOToDTO);
+    const measurementDAOs = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDate, endDate);
+    const measurements = measurementDAOs.map((dao) => mapMeasurementDAOToDTO(dao));
+    return processMeasurements(measurements, sensorMac);
 }   
 
 export async function createMeasurement(
@@ -38,96 +56,68 @@ export async function createMeasurement(
 export async function getSensorStats(
     networkCode: string,
     gatewayMac: string,
-    sensorMac: string
+    sensorMac: string,
+    startDate?: Date,
+    endDate?: Date
 ): Promise<Stats> {
     const measurementRepo = new MeasurementRepository();
     const measurementDAOs = await measurementRepo.getMeasurementsBySensor(
-      networkCode,
-      gatewayMac,
-      sensorMac
+        networkCode,
+        gatewayMac,
+        sensorMac,
+        startDate,
+        endDate
     );
-    const measurements = measurementDAOs.map(mapMeasurementDAOToDTO);
+    const measurements = measurementDAOs.map((dao) => mapMeasurementDAOToDTO(dao));
     return calculateStats(measurements);
 }
+
+
+export async function getNetworkStats(
+    networkCode: string,
+    sensorMacs: string[]
+  ): Promise<Measurements[]> {
+    const measurementRepo = new MeasurementRepository();
+    const measurements= await getMeasurementsBySensorsAndNetwork(networkCode, sensorMacs);
+    measurements.map( (measurement) => {measurement.measurements=null});
+    return measurements;
+  }
 
 export async function getNetworkOutliers(
     networkCode: string,
     sensorMacs: string[]
-  ): Promise<Measurement[]> {
+  ): Promise<Measurements[]> {
     const measurementRepo = new MeasurementRepository();
-    const measurementDAOs = await measurementRepo.getMeasurementsBySensorsAndNetwork(
-      networkCode,
-      sensorMacs
-    );
-  
-    // Map DAOs to DTOs
-    const measurements = measurementDAOs.map(mapMeasurementDAOToDTO);
-  
-    // Calculate statistics for the measurements
-    const stats = calculateStats(measurements);
-  
-    // Update the isOutlier property based on thresholds
-    const outliers = measurements.filter(
-      (measurement) =>
-        measurement.value > stats.upperThreshold ||
-        measurement.value < stats.lowerThreshold
-    );
-    outliers.map((measurement) => {
-      measurement.isOutlier = true;
-    });
-    return outliers;
+    const measurements= await getMeasurementsBySensorsAndNetwork(networkCode, sensorMacs);
+    measurements.map( (measurement) => {measurement.measurements=measurement.measurements.filter((measurement) => measurement.isOutlier)});
+    return measurements;
   }
 
   export async function getSensorOutliers(
     networkCode: string,
     gatewayMac: string,
-    sensorMac: string
-  ): Promise<Measurement[]> {
+    sensorMac: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<Measurements> {
     const measurementRepo = new MeasurementRepository();
   
     // Retrieve all measurements for the sensor
     const measurementDAOs = await measurementRepo.getMeasurementsBySensor(
-      networkCode,
-      gatewayMac,
-      sensorMac
+        networkCode,
+        gatewayMac,
+        sensorMac,
+        startDate,
+        endDate
     );
   
     // Map DAOs to DTOs
-    const measurements = measurementDAOs.map(mapMeasurementDAOToDTO);
-  
-    // Calculate statistics for the measurements
-    const stats = calculateStats(measurements);
-  
-    // Filter measurements to find outliers
-    const outliers = measurements.filter(
-      (measurement) =>
-        measurement.value > stats.upperThreshold ||
-        measurement.value < stats.lowerThreshold
+    const measurements = measurementDAOs.map((dao) => mapMeasurementDAOToDTO(dao));
+    let processedMeasurements = processMeasurements(measurements, sensorMac);
+    //update processedMeasurements vector removing measurements that are not outliers
+    processedMeasurements.measurements = processedMeasurements.measurements.filter(
+      (measurement) => measurement.isOutlier
     );
-  
-    // Mark outliers explicitly
-    outliers.forEach((measurement) => {
-      measurement.isOutlier = true;
-    });
-  
-    return outliers;
+    return processedMeasurements;
   }
 
-  export async function getNetworkStats(
-    networkCode: string,
-    sensorMacs: string[]
-  ): Promise<Stats> {
-    const measurementRepo = new MeasurementRepository();
-  
-    // Retrieve all measurements for the specified sensors in the network
-    const measurementDAOs = await measurementRepo.getMeasurementsBySensorsAndNetwork(
-      networkCode,
-      sensorMacs
-    );
-  
-    // Map DAOs to DTOs
-    const measurements = measurementDAOs.map(mapMeasurementDAOToDTO);
-  
-    // Calculate and return statistics
-    return calculateStats(measurements);
-  }
