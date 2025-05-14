@@ -5,12 +5,16 @@ export class NetworkDAO {
     @PrimaryColumn({ nullable: false })
     code: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     name: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     description: string;
 
-    @OneToMany(() => Gateway, gateway => gateway.network)
+    @OneToMany(() => Gateway, gateway => gateway.network,{
+        eager:true,
+        onDelete:"CASCADE",
+        onUpdate:"CASCADE"
+    })
     gateways: Gateway[];
 }
