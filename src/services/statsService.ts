@@ -42,7 +42,6 @@ export function calculateStats(measurements: Measurement[]): Stats {
   const endDate = new Date(
     Math.max(...measurements.map((m) => m.createdAt.getTime()))
   );
-
   // Return the calculated statistics
   return {
     startDate,
@@ -61,8 +60,14 @@ export function processMeasurements(
     let stats;
     // Calculate statistics for the measurements
     if (measurements.length === 0) { 
-        stats = null; 
-        measurements=null;
+        stats = {
+            startDate: undefined,
+            endDate: undefined,
+            mean: 0,
+            variance: 0,
+            upperThreshold: 0,
+            lowerThreshold: 0,
+        };
     }
     else {
      stats = calculateStats(measurements);

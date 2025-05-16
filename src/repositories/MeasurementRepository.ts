@@ -1,5 +1,5 @@
 import { AppDataSource } from "@database";
-import { Repository, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import { Repository, LessThanOrEqual, MoreThanOrEqual, Between } from "typeorm";
 import { MeasurementDAO } from "@dao/MeasurementDAO";
 import { SensorDAO } from "@dao/SensorDAO";
 import { findOrThrowNotFound } from "@utils";
@@ -20,7 +20,6 @@ export class MeasurementRepository {
     sensorMac: string,
     value: number,
     createdAt: Date,
-    isOutlier?: boolean
   ): Promise<MeasurementDAO> {
     // Validate the sensor exists
     const sensor = findOrThrowNotFound(
@@ -52,9 +51,11 @@ export class MeasurementRepository {
     networkCode: string,
     gatewayMac: string,
     sensorMac: string,
-    startDate?: Date,
-    endDate?: Date
+    startDate?: string,
+    endDate?: string
   ): Promise<MeasurementDAO[]> {
+   
+
     // Validate the sensor exists within the specified network and gateway
     findOrThrowNotFound(
       await this.sensorRepo.find({
@@ -70,10 +71,13 @@ export class MeasurementRepository {
       () => true,
       `Sensor with MAC '${sensorMac}' not found in gateway '${gatewayMac}' and network '${networkCode}'`
     );
-
+    // Parse startDate and endDate if provided
+    const startDateParsed = startDate ? new Date(startDate) : new Date(0);
+    const endDateParsed = endDate ? new Date(endDate) : new Date();
     // Retrieve measurements
     return this.repo.find({
       where: {
+        createdAt: Between(startDateParsed, endDateParsed),
         sensor: {
           macAddress: sensorMac,
           gateway: {
@@ -81,8 +85,6 @@ export class MeasurementRepository {
             network: { code: networkCode },
           },
         },
-        ...(startDate && { createdAt: MoreThanOrEqual(startDate) }), // Check startDate if provided
-        ...(endDate && { createdAt: LessThanOrEqual(endDate) }),        // Check endDate if provided
       },
       relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
     });
@@ -91,9 +93,12 @@ export class MeasurementRepository {
   async getMeasurementsBySensorInNetworkWithNoError( 
     networkCode: string,
     sensorMac: string,
-    startDate?: Date,
-    endDate?: Date
+    startDate?: string,
+    endDate?: string
   ): Promise<MeasurementDAO[] | null> {
+    // Parse startDate and endDate if provided
+    const startDateParsed = startDate ? new Date(startDate) : new Date(0);
+    const endDateParsed = endDate ? new Date(endDate) : new Date();
     //return measurements if the sensor exists in the network, otherwise return null
     const sensor = await this.sensorRepo.findOne({
       where: {
@@ -109,14 +114,13 @@ export class MeasurementRepository {
     }
     return this.repo.find({
       where: {
+        createdAt: Between(startDateParsed, endDateParsed),
         sensor: {
           macAddress: sensorMac,
           gateway: {
             network: { code: networkCode },
           },
-        },
-        ...(startDate && { createdAt: MoreThanOrEqual(startDate) }), // Check startDate if provided
-        ...(endDate && { createdAt: LessThanOrEqual(endDate) }),        // Check endDate if provided
+        },     
       },
       relations: ["sensor", "sensor.gateway", "sensor.gateway.network"],
     });
