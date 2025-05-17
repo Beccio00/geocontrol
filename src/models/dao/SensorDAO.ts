@@ -1,9 +1,14 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, Unique, PrimaryGeneratedColumn } from "typeorm";
 import { GatewayDAO as Gateway } from "@dao/GatewayDAO";
 import { NetworkDAO as Network } from "@dao/NetworkDAO";
+
 @Entity("sensors")
+@Unique(["macAddress"])
 export class SensorDAO {
-  @PrimaryColumn({ nullable: false })
+  @PrimaryGeneratedColumn()
+  id: number; 
+
+  @Column({ nullable: false })
   macAddress: string;
 
   @Column({ nullable: true })
@@ -22,7 +27,7 @@ export class SensorDAO {
       onDelete:"CASCADE",
       onUpdate:"CASCADE"
   })
-  @JoinColumn({ name: 'gatewayMac' })
+  @JoinColumn({ name: 'gatewayId' })
   gateway: Gateway;
 }
 
