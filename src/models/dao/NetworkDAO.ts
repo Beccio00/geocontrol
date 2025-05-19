@@ -1,8 +1,13 @@
-import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany, Unique, PrimaryGeneratedColumn } from "typeorm";
 import { GatewayDAO as Gateway } from "@dao/GatewayDAO";
+
 @Entity("networks")
+@Unique(["code"])
 export class NetworkDAO {
-    @PrimaryColumn({ nullable: false })
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({ nullable: false })
     code: string;
 
     @Column({ nullable: true })
