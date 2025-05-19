@@ -53,20 +53,19 @@ export class NetworkRepository {
     ): Promise<NetworkDAO> {
         const old: NetworkDAO = findOrThrowNotFound (
             await this.repo.find({ 
-                where: { code }
+                where: { code: code }
             }),
             () => true,
             `Network with code '${code}' not found`
         );
 
-        if (newCode !== code) {
+        if (newCode !== code && newCode) {
             throwConflictIfFound(
                 await this.repo.find({ where: { code: newCode } }),
                 () => true,
                 `Network with code '${newCode}' already exists`
             );
 
-            await this.repo.remove(old);
         }
 
         old.code = newCode || old.code;
