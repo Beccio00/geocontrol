@@ -20,7 +20,6 @@ export async function getMeasurementsBySensorsAndNetwork(
     const processedMeasurements=[];
     const measurementRepo = new MeasurementRepository();
 
-    console.log("sensormacs: ", sensorMacs);
     //for each sensor in the array, get the measurements from the database
     await Promise.all(sensorMacs.map(async (sensorMac) => { 
         const measurementDAOs= await measurementRepo.getMeasurementsBySensorInNetworkWithNoError(networkCode, sensorMac, startDate, endDate);
@@ -104,7 +103,8 @@ export async function getNetworkStats(
     endDate?: string
   ): Promise<Measurements[]> {
     const measurements= await getMeasurementsBySensorsAndNetwork(networkCode, sensorMacs, startDate, endDate);
-    measurements.map( (measurement) => {measurement.measurements=null});
+    measurements.map( (measurement) => {measurement.measurements=[]});
+    console.log(measurements);
     return measurements;
   }
 

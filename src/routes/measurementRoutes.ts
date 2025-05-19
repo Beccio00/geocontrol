@@ -77,9 +77,7 @@ router.get(
   CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/stats",authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer]),
   async (req, res, next) => {
     try {
-      const raw= req.query.sensorMacs as string;
-      const sensorMacs=JSON.parse(raw) as string[];
-      const stats = await getNetworkStats(req.params.networkCode, sensorMacs, req.query.startDate as string, req.query.endDate as string);
+      const stats = await getNetworkStats(req.params.networkCode, req.query.sensorMacs as string[], req.query.startDate as string, req.query.endDate as string);
       res.status(200).json(stats);
     } catch (error) {
       next(error);
