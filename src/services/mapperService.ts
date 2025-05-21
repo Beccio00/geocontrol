@@ -80,7 +80,7 @@ export function mapNetworkDAOToDTO(networkDAO: NetworkDAO): NetworkDTO {
      networkDAO.code,
      networkDAO.name, 
      networkDAO.description, 
-     networkDAO.gateways 
+     networkDAO.gateways?.map(mapGatewayDAOToDTO)
     ); 
 }
 

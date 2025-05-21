@@ -4,6 +4,7 @@ import { NetworkDAO } from "@dao/NetworkDAO";
 import { UserType } from "@models/UserType";
 import { findOrThrowNotFound, throwConflictIfFound } from "@utils";
 import { Gateway } from "@models/dto/Gateway";
+import { mapGatewayDAOToDTO } from "@services/mapperService";
 
 export class NetworkRepository {
     private repo: Repository<NetworkDAO>
