@@ -152,32 +152,48 @@ export class SensorRepository {
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`
     );
-    const old: SensorDAO = findOrThrowNotFound (      
-      await this.repo.find({ where: {      
-        macAddress: sensorMac,
-        gateway: {
-          macAddress: gatewayMac,
-          network: {
-            code: networkCode
+    const oldSensor: SensorDAO = findOrThrowNotFound (      
+      await this.repo.find({ 
+        where: {      
+          macAddress: sensorMac,
+          gateway: {
+            macAddress: gatewayMac,
+            network: {
+              code: networkCode
+            }
           }
         }
-      },
-      relations: ['gateway', 'gateway.network'] }),
+      }),
       () => true,
       `Sensor with macAddress '${sensorMac}' not found in gateway '${gatewayMac}' and network '${networkCode}'`
     );
-    throwConflictIfFound(    
-      await this.repo.find({ where: {  macAddress : newMacAddress } }),
-      () => true,
-      `Sensor with macAddress '${newMacAddress}' already exists`
-    );
-    return this.repo.save({
-      macAddress: newMacAddress || old.macAddress,
-      name: newName || old.name,
-      description: newDescription || old.description,
-      variable: newVariable || old.variable,
-      unit: newUnit || old.unit,
-    });    
+
+    // Check for MAC conflict within this network
+    if (newMacAddress && newMacAddress !== sensorMac) {
+      throwConflictIfFound(
+        await this.repo.find({ 
+          where: {      
+            macAddress: newMacAddress,
+            gateway: {
+              macAddress: gatewayMac,
+              network: {
+                code: networkCode
+              }
+            }       
+          } 
+        }),
+        () => true,
+        `Sensor with MAC '${newMacAddress}' already exists in network '${networkCode}'`
+      );
+    }
+
+    oldSensor.macAddress = newMacAddress || oldSensor.macAddress;
+    oldSensor.name = newName || oldSensor.name;
+    oldSensor.description = newDescription || oldSensor.description;
+    oldSensor.variable = newVariable || oldSensor.variable;
+    oldSensor.unit = newUnit || oldSensor.unit;
+
+    return this.repo.save(oldSensor);    
   }
  
   async deleteSensorByMac(networkCode: string, gatewayMac: string, sensorMac : string): Promise<void>{
