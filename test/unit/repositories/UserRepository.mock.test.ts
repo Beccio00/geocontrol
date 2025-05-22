@@ -24,7 +24,26 @@ describe("UserRepository: mocked database", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+  it("get all users", async () => {
+    const user1 = new UserDAO();
+    user1.username = "john";
+    user1.password = "pass123";
+    user1.type = UserType.Admin;
 
+    const user2 = new UserDAO();
+    user2.username = "jane";
+    user2.password = "pass456";
+    user2.type = UserType.Viewer;
+
+    mockFind.mockResolvedValue([user1, user2]);
+
+    const result = await repo.getAllUsers();
+
+    expect(result).toHaveLength(2);
+    expect(result).toContain(user1);
+    expect(result).toContain(user2);
+    expect(mockFind).toHaveBeenCalledWith(); // nessun filtro
+  });
   it("create user", async () => {
     mockFind.mockResolvedValue([]);
 
@@ -47,7 +66,6 @@ describe("UserRepository: mocked database", () => {
       type: UserType.Admin
     });
   });
-
   it("create user: conflict", async () => {
     const existingUser = new UserDAO();
     existingUser.username = "john";
@@ -60,7 +78,6 @@ describe("UserRepository: mocked database", () => {
       repo.createUser("john", "another", UserType.Viewer)
     ).rejects.toThrow(ConflictError);
   });
-
   it("find user by username", async () => {
     const foundUser = new UserDAO();
     foundUser.username = "john";
@@ -73,7 +90,6 @@ describe("UserRepository: mocked database", () => {
     expect(result).toBe(foundUser);
     expect(result.type).toBe(UserType.Operator);
   });
-
   it("find user by username: not found", async () => {
     mockFind.mockResolvedValue([]);
 
@@ -81,7 +97,6 @@ describe("UserRepository: mocked database", () => {
       NotFoundError
     );
   });
-
   it("delete user", async () => {
     const user = new UserDAO();
     user.username = "john";
