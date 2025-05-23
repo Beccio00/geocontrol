@@ -56,7 +56,7 @@ function removeNullAttributes<T>(dto: T): Partial<T> {
       ([_, value]) =>
         value !== null &&
         value !== undefined &&
-        (!Array.isArray(value) || value.length >= 0)  //FIXME: set value.length > 0
+        (!Array.isArray(value) || value.length > 0)  
     )
   ) as Partial<T>;
 }
@@ -142,65 +142,38 @@ export function createMeasurementDTO(
 
 export function mapMeasurementDAOToDTO(
   dao: MeasurementDAO,
-  stats?: Stats
 ): MeasurementDTO {
-  // Calculate isOutlier dynamically if stats are provided
-  const isOutlier =
-    stats &&
-    (dao.value > stats.upperThreshold || dao.value < stats.lowerThreshold);
-
-  // Use createMeasurementDTO to construct the DTO
-  return createMeasurementDTO(dao.createdAt, dao.value, isOutlier);
+  
+  return createMeasurementDTO(dao.createdAt, dao.value, false); //FIXME: outlier
 }
 
-export function createMeasurementsDTO(
-  sensorMacAddress?: string,
-  measurements?: MeasurementDTO[],
-  stats?: Stats
-): MeasurementsDTO {
-  return removeNullAttributes({
-    sensorMacAddress,
-    measurements,
-    stats,
-  }) as MeasurementsDTO;
-}
 
-export function mapMeasurementsToDTO(
-  sensorMacAddress: string,
-  measurementDAOs: MeasurementDAO[],
-  stats?: Stats
-): MeasurementsDTO {
-  return createMeasurementsDTO(
-    sensorMacAddress,
-    measurementDAOs,
-    stats
-  );
-}
 
-export function createStatsDTO(
-  mean?: number,
-  variance?: number,
-  upperThreshold?: number,
-  lowerThreshold?: number
-): Stats {
-  return removeNullAttributes({
-    mean,
-    variance,
-    upperThreshold,
-    lowerThreshold,
-  }) as Stats;
-}
 
-export function mapStatsToDTO(stats: {
-  mean: number;
-  variance: number;
-  upperThreshold: number;
-  lowerThreshold: number;
-}): Stats {
-  return createStatsDTO(
-    stats.mean,
-    stats.variance,
-    stats.upperThreshold,
-    stats.lowerThreshold
-  );
-}
+// export function createStatsDTO(
+//   mean?: number,
+//   variance?: number,
+//   upperThreshold?: number,
+//   lowerThreshold?: number
+// ): Stats {
+//   return removeNullAttributes({
+//     mean,
+//     variance,
+//     upperThreshold,
+//     lowerThreshold,
+//   }) as Stats;
+// }
+
+// export function mapStatsToDTO(stats: {
+//   mean: number;
+//   variance: number;
+//   upperThreshold: number;
+//   lowerThreshold: number;
+// }): Stats {
+//   return createStatsDTO(
+//     stats.mean,
+//     stats.variance,
+//     stats.upperThreshold,
+//     stats.lowerThreshold
+//   );
+// }
