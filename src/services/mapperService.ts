@@ -7,13 +7,12 @@ import { ErrorDTO } from "@models/dto/ErrorDTO";
 import { UserType } from "@models/UserType";
 import { Sensor as SensorDTO } from "@models/dto/Sensor";
 import { SensorDAO } from "@models/dao/SensorDAO";
-import { create } from "domain";
 import { Gateway as GatewayDTO } from "@models/dto/Gateway";
 import { GatewayDAO } from "@models/dao/GatewayDAO";
 import { Measurement as MeasurementDTO } from "@dto/Measurement";
 import { Measurements as MeasurementsDTO } from "@dto/Measurements";
 import { MeasurementDAO } from "@dao/MeasurementDAO";
-import { Stats } from "@dto/Stats";
+import { Stats as StatsDTO} from "@dto/Stats";
 
 
 export function createErrorDTO(
@@ -84,7 +83,6 @@ export function mapNetworkDAOToDTO(networkDAO: NetworkDAO): NetworkDTO {
     ); 
 }
 
-
 export function createGatewayDTO(
   macAddress?: string,
   name?: string,
@@ -140,40 +138,36 @@ export function createMeasurementDTO(
   }) as MeasurementDTO;
 }
 
-export function mapMeasurementDAOToDTO(
-  dao: MeasurementDAO,
-): MeasurementDTO {
-  
-  return createMeasurementDTO(dao.createdAt, dao.value, false); //FIXME: outlier
+export function mapMeasurementDAOToDTO(MeasurementDAO : MeasurementDAO, isOutlier:boolean): MeasurementDTO{
+  return createMeasurementDTO(MeasurementDAO.createdAt, MeasurementDAO.value, isOutlier);
 }
 
+export function createStatsDTO(
+  mean : number,
+  variance : number,
+  upperThreshold : number,
+  lowerThreshold : number,
+  startDate? : Date,
+  endDate? : Date
+): StatsDTO {
+  return removeNullAttributes({
+    startDate,
+    endDate,
+    mean,
+    variance,
+    upperThreshold,
+    lowerThreshold
+  }) as StatsDTO
+}
 
-
-
-// export function createStatsDTO(
-//   mean?: number,
-//   variance?: number,
-//   upperThreshold?: number,
-//   lowerThreshold?: number
-// ): Stats {
-//   return removeNullAttributes({
-//     mean,
-//     variance,
-//     upperThreshold,
-//     lowerThreshold,
-//   }) as Stats;
-// }
-
-// export function mapStatsToDTO(stats: {
-//   mean: number;
-//   variance: number;
-//   upperThreshold: number;
-//   lowerThreshold: number;
-// }): Stats {
-//   return createStatsDTO(
-//     stats.mean,
-//     stats.variance,
-//     stats.upperThreshold,
-//     stats.lowerThreshold
-//   );
-// }
+export function createMeasurementsDTO(
+  sensorMacAddress : string,
+  stats? : StatsDTO,
+  measurements? : Array<MeasurementDTO>
+) : MeasurementsDTO {
+  return removeNullAttributes({
+    sensorMacAddress,
+    stats,
+    measurements
+  }) as MeasurementsDTO
+}
