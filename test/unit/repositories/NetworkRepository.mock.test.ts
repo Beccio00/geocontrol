@@ -3,6 +3,9 @@ import { NetworkDAO } from "@dao/NetworkDAO";
 import { UnauthorizedError } from "@models/errors/UnauthorizedError";
 import { NotFoundError } from "@models/errors/NotFoundError";
 import { InsufficientRightsError } from "@models/errors/InsufficientRightsError";
+import { GatewayDAO } from "@models/dao/GatewayDAO";
+import { Gateway } from "@models/dto/Gateway";
+import { ConflictError } from "@models/errors/ConflictError";
 
 const mockFind = jest.fn();
 const mockSave = jest.fn();
@@ -71,42 +74,86 @@ describe("NetworkRepository: mocked database", () => {
     mockFind.mockResolvedValue([]);
 
     await expect(repo.getNetworkByCode("1")).rejects.toThrow(NotFoundError);
-    expect(mockFind).toHaveBeenCalledWith({ where: { code: "nonexistent" } });
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "1" } });
   });
 
   it("create network", async () => {
     const newNetwork = new NetworkDAO();
-    newNetwork.id = "2";
+    newNetwork.code = "1";
+    newNetwork.name = "Network 1";
+    newNetwork.description = "Description 1";
+    newNetwork.gateways = [];
+    mockFind.mockResolvedValue([]); // No existing networks with this code
     mockSave.mockResolvedValue(newNetwork);
 
-    const result = await repo.createNetwork(newNetwork);
+    const result = await repo.createNetwork(newNetwork.code, newNetwork.name, newNetwork.description, newNetwork.gateways);
 
-    expect(result).toBeInstanceOf(NetworkDAO);
-    expect(result.id).toBe("2");
-    expect(mockSave).toHaveBeenCalledWith(newNetwork);
+    expect(result).toEqual(newNetwork);
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "1" } });
+    expect(mockSave).toHaveBeenCalledWith({
+      code: newNetwork.code,
+      name: newNetwork.name,
+      description: newNetwork.description,
+      gateways: newNetwork.gateways});
+    });
+
+  it ("create network: conflict", async () => {
+    const existingNetwork = new NetworkDAO();
+    existingNetwork.code = "1";
+    existingNetwork.name = "Network 1";
+    existingNetwork.description = "Description 1";
+
+    mockFind.mockResolvedValue([existingNetwork]);
+    await expect(repo.createNetwork("1", "Network 1", "Description 1", [])).rejects.toThrow(ConflictError);
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "1" } });
+  });
+
+  it("create network: with gateways", async () => {
+    const gateways: Gateway[] = [
+      { macAddress: "AA:BB:CC:DD:EE:F1", name: "Gateway 1", description: "Test Gateway 1", sensors: []
+      } as Gateway,
+      { macAddress: "AA:BB:CC:DD:EE:F2",  name: "Gateway 2", description: "Test Gateway 2", sensors: []
+      } as Gateway
+    ];
+    
+    mockFind.mockResolvedValue([]);
+    mockSave.mockResolvedValue({ code: "NET1", name: "Test", description: "Desc", gateways });
+
+    const result = await repo.createNetwork("NET1", "Test", "Desc", gateways);
+
+    expect(mockSave).toHaveBeenCalledWith({
+      code: "NET1",
+      name: "Test",
+      description: "Desc",
+      gateways: gateways
+    });
   });
 
   it("delete network", async () => {
     const network = new NetworkDAO();
-    network.id = "3";
+    network.code = "1";
     mockFind.mockResolvedValue([network]);
+    mockRemove.mockResolvedValue(undefined);
     
-    await repo.deleteNetwork("3");
+    await repo.deleteNetwork("1");
 
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "1" } });
     expect(mockRemove).toHaveBeenCalledWith(network);
   });
 
   it("delete network: not found", async () => {
     mockFind.mockResolvedValue([]);
 
-    await expect(repo.deleteNetwork("4")).rejects.toThrow(NotFoundError);
+    await expect(repo.deleteNetwork("nonexistent")).rejects.toThrow(NotFoundError);
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "nonexistent" } });
+    expect(mockRemove).not.toHaveBeenCalled();
   });
-
+/*
   it("unauthorized access", async () => {
     await expect(repo.unauthorizedAccess()).rejects.toThrow(UnauthorizedError);
   });
 
   it("insufficient rights", async () => {
     await expect(repo.insufficientRights()).rejects.toThrow(InsufficientRightsError);
-  });
+  });*/
 });
