@@ -1,9 +1,10 @@
 import { CONFIG } from "@config";
-import { getMeasurementsBySensor, getOutliersBySensor, getStatisticsBySensor, storeMeasurement } from "@controllers/measurementController";
+import { getMeasurementsBySensor, getOutliersBySensor, getStatisticsBySensor, storeMeasurement, getMeasuramentsByNetwork, getOutliersByNetwork, getStatisticsByNetwork } from "@controllers/measurementController";
 import { authenticateUser } from "@middlewares/authMiddleware";
 import { MeasurementFromJSON } from "@models/dto/Measurement";
 import AppError from "@models/errors/AppError";
 import { UserType } from "@models/UserType";
+import { parseStringArrayParam } from "@utils";
 import { Router } from "express";
 //import { getMeasuramentsByNetwork } from "@controllers/measurementController";
 
@@ -94,31 +95,39 @@ router.get(
 router.get( CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/measurements",
   authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer] ), 
   async (req, res, next) => {
-  /* try{
-    const { sensorMacs, startDate, endDate } = req.query;
-    
-    const sensorMacArray = typeof sensorMacs === "string" ? [sensorMacs] : Array.isArray(sensorMacs) ? sensorMacs as string[] : undefined;
+   try{
 
-    const measurements = await getMeasuramentsByNetwork(
-      req.params.networkCode,
-      sensorMacArray,
-      startDate as string | undefined,
-      endDate as string | undefined
-    );
-
-    res.status(200).json(measurements);
+    res.status(200).json(
+      await getMeasuramentsByNetwork(
+        req.params.networkCode,
+        parseStringArrayParam(req.query.sensorMacs),
+        req.query.startDate as string | undefined,
+        req.query.endDate as string | undefined,
+      )
+   );
 
   } catch (error) {
     next(error); 
-  } */
+  } 
 });
 
 // Retrieve statistics for a set of sensors of a specific network
 router.get(
   CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/stats",
   authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer]),
-  (req, res, next) => {
-    throw new AppError("Method not implemented", 500);
+  async (req, res, next) => {
+    try {
+      res.status(200).json(
+        await getStatisticsByNetwork(
+          req.params.networkCode,
+          parseStringArrayParam(req.query.sensorMacs), 
+          req.query.startDate as string | undefined, 
+          req.query.endDate as string | undefined
+        )
+      );
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
@@ -127,7 +136,18 @@ router.get(
   CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/outliers",
   authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer]),
   (req, res, next) => {
-    throw new AppError("Method not implemented", 500);
+    try {
+      res.status(200).json(
+        getOutliersByNetwork(
+          req.params.networkCode,
+          parseStringArrayParam(req.query.sensorMacs), 
+          req.query.startDate as string | undefined, 
+          req.query.endDate as string | undefined
+        )
+      );
+    }catch (error) {
+      next(error);
+    }
   }
 );
 

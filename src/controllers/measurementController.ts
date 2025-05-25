@@ -3,9 +3,9 @@ import {Measurements as MeasurementsDTO, MeasurementsToJSON} from "@dto/Measurem
 import {MeasurementRepository} from "@repositories/MeasurementRepository";
 import { Stats as StatsDTO } from "@models/dto/Stats";
 import {createMeasurementsDTO, createStatsDTO, mapMeasurementDAOToDTO } from "@services/mapperService";
-import { calcStats, processMeasurements } from "@services/measurementsService";
+import { calcStats, processMeasurements, groupMeasurementsBySensor } from "@services/measurementsService";
 import { parseISODateParamToUTC } from "@utils";
-
+import AppError from "@models/errors/AppError";
 
 export async function getMeasurementsBySensor(
     networkCode: string, 
@@ -21,9 +21,9 @@ export async function getMeasurementsBySensor(
     const endDateISOUTC = parseISODateParamToUTC(endDate);
 
     const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
-    const stats = await calcStats(sensorMeasurements);
+    const stats = calcStats(sensorMeasurements);
   
-    const processedMeasurements = await processMeasurements(sensorMeasurements, stats.upperThreshold, stats.lowerThreshold);
+    const processedMeasurements = processMeasurements(sensorMeasurements, stats.upperThreshold, stats.lowerThreshold);
 
     return MeasurementsToJSON(
         createMeasurementsDTO(
@@ -33,6 +33,7 @@ export async function getMeasurementsBySensor(
         )
     )    
 }
+
 export async function storeMeasurement(networkCode:string, gatewayMac: string, sensorMac: string, measurements : MeasurementDTO[]) : Promise<void> {    
     const measurementRepo = new MeasurementRepository();
     await Promise.all(
@@ -61,7 +62,7 @@ export async function getStatisticsBySensor(
     const endDateISOUTC = parseISODateParamToUTC(endDate);
 
     const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
-    const stats = await calcStats(sensorMeasurements);
+    const stats = calcStats(sensorMeasurements);
 
     return createStatsDTO(stats.mean,stats.variance, stats.upperThreshold, stats.lowerThreshold,startDateISOUTC,endDateISOUTC)
 
@@ -81,9 +82,9 @@ export async function getOutliersBySensor(
     const endDateISOUTC = parseISODateParamToUTC(endDate);
 
     const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
-    const stats = await calcStats(sensorMeasurements);
+    const stats = calcStats(sensorMeasurements);
   
-    const processedMeasurements = await processMeasurements(sensorMeasurements, stats.upperThreshold, stats.lowerThreshold);
+    const processedMeasurements = processMeasurements(sensorMeasurements, stats.upperThreshold, stats.lowerThreshold);
 
     return MeasurementsToJSON(
         createMeasurementsDTO(
@@ -95,20 +96,41 @@ export async function getOutliersBySensor(
         )
     )    
 }
-/* export async function getMeasuramentsByNetwork(
+
+export async function getMeasuramentsByNetwork(
     networkCode: string,
-    gatewayMac: string,
-    sensorMac: string,
+    sensorMac?: string[],
     startDate?: string,
     endDate?: string
-  ): Promise<Measurements> {
+  ): Promise<any[]> {
     const measurementRepo = new MeasurementRepository();
 
-    const measurementsDAO = await measurementRepo.getMeasurementsByNetwork(
-        networkCode,
-        sensorMacs,
-        startDate,
-        endDate
-    );
-    return measurementsDAO.map(mapMeasurementsToDTO);    
-} */
+    const startDateISOUTC = parseISODateParamToUTC(startDate);
+    const endDateISOUTC = parseISODateParamToUTC(endDate);
+
+
+    const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);    
+    const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
+
+
+    return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
+        const stats = calcStats(measurements);
+        const processed = processMeasurements(measurements, stats.upperThreshold, stats.lowerThreshold);
+
+        return MeasurementsToJSON(
+        createMeasurementsDTO(
+            sensorMac,
+            createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC),
+            processed.map(([m, isOutlier]) => mapMeasurementDAOToDTO(m, isOutlier))
+        )
+        );
+    });
+} 
+
+export async function getStatisticsByNetwork(networkCode: string, sensorMac?: string[], startDate?: string, endDate?: string): Promise<any[]> {
+    throw new AppError("Method not implemented", 500);
+}
+
+export async function getOutliersByNetwork(networkCode: string, sensorMac?: string[], startDate?: string, endDate?: string): Promise<any[]> {
+    throw new AppError("Method not implemented", 500);
+}

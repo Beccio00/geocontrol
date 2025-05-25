@@ -1,13 +1,13 @@
 import { MeasurementDAO } from "@models/dao/MeasurementDAO";
 
-export async function processMeasurements(measurements : MeasurementDAO[], upperThreshold : number, lowerThreshold : number){
+export function processMeasurements(measurements : MeasurementDAO[], upperThreshold : number, lowerThreshold : number){
     return measurements.map(m => {
         const isOutlier = m.value < lowerThreshold || m.value > upperThreshold;
         return [m, isOutlier] as [MeasurementDAO, boolean];
     });
 }
 
-export async function calcStats(measurements : MeasurementDAO[]){
+export  function calcStats(measurements : MeasurementDAO[]){
     if (measurements.length === 0) {
         return {
             mean: 0.00,
@@ -35,4 +35,17 @@ export async function calcStats(measurements : MeasurementDAO[]){
         upperThreshold: round2(upperThreshold),
         lowerThreshold: round2(lowerThreshold),
     };
+}
+
+export function groupMeasurementsBySensor(measurements: MeasurementDAO[]): Record<string, MeasurementDAO[]> {
+    const groupedMeasurements: Record<string, MeasurementDAO[]> = {};
+    measurements.forEach(measurement => {
+        const sensorMac = measurement.sensor.macAddress;
+        if (!groupedMeasurements[sensorMac]) {
+            groupedMeasurements[sensorMac] = [];
+        }
+        groupedMeasurements[sensorMac].push(measurement);
+        return groupedMeasurements;
+    });
+    return groupedMeasurements;
 }

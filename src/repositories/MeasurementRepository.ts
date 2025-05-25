@@ -20,7 +20,7 @@ export class MeasurementRepository{
     this.sensorRepo = AppDataSource.getRepository(SensorDAO);
   }
 
-    async storeMeasurement(
+  async storeMeasurement(
       networkCode: string,
       gatewayMac: string,
       sensorMac: string,
@@ -133,12 +133,9 @@ export class MeasurementRepository{
   async getMeasurementsByNetwork(
     networkCode: string,
     sensorMacs?: string[],
-    startDate?: string,
-    endDate?: string
+    startDate?: Date,
+    endDate?: Date,
   ): Promise<MeasurementDAO[]> {
-    const startDateParsed = startDate ? new Date(startDate) : new Date(0);
-    const endDateParsed = endDate ? new Date(endDate) : new Date();
-
 
     findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } } ),
@@ -147,6 +144,11 @@ export class MeasurementRepository{
     );
 
     const gateways = await this.gatewayRepo.find({ where: { network: { code: networkCode } } });
+
+    if (gateways.length === 0) {
+      return [];
+    }
+
     const gatewayIds = gateways.map(gateway => gateway.id);
 
     // Trova i sensori nei gateway della rete (eventualmente filtrati per MAC)
@@ -154,11 +156,15 @@ export class MeasurementRepository{
       gateway: { id: In(gatewayIds) }
     };
 
-    if (sensorMacs?.length) {
+    if (sensorMacs && sensorMacs.length > 0) {
       sensorWhere.macAddress = In(sensorMacs);
     }
 
     const sensors = await this.sensorRepo.find({ where: sensorWhere });
+    if (sensors.length === 0) {
+      return [];
+    }
+
     const sensorIds = sensors.map(s => s.id);
 
     // Costruisci il filtro per le misure
@@ -179,8 +185,5 @@ export class MeasurementRepository{
       order: { createdAt: "ASC" },
       relations: { sensor: true }
     });
-  
   }
-
- 
 }
