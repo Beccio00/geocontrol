@@ -148,12 +148,122 @@ describe("NetworkRepository: mocked database", () => {
     expect(mockFind).toHaveBeenCalledWith({ where: { code: "nonexistent" } });
     expect(mockRemove).not.toHaveBeenCalled();
   });
-/*
-  it("unauthorized access", async () => {
-    await expect(repo.unauthorizedAccess()).rejects.toThrow(UnauthorizedError);
+
+  it("update network - update with new code", async () => {
+    const existingNetwork = new NetworkDAO();
+    existingNetwork.code = "123"; existingNetwork.name = "Old Name";
+    existingNetwork.description = "Old Description"; existingNetwork.gateways = [];
+
+    const updatedNetwork = new NetworkDAO();
+    updatedNetwork.code = "456"; updatedNetwork.name = "New Name";
+    updatedNetwork.description = "New Description"; updatedNetwork.gateways = [];
+
+    // mock finding the existing network
+    mockFind.mockResolvedValueOnce([existingNetwork]);
+    // mock checking new code doesn't exist
+    mockFind.mockResolvedValueOnce([]);
+    // Mock save the updated network
+    mockSave.mockResolvedValue(updatedNetwork);
+
+    const result = await repo.updateNetwork("123", "456", "New Name", "New Description");
+
+    expect(result).toEqual(updatedNetwork);
+    expect(mockFind).toHaveBeenCalledTimes(2);
+    expect(mockFind).toHaveBeenNthCalledWith(1, { where: { code: "123" } });
+    expect(mockFind).toHaveBeenNthCalledWith(2, { where: { code: "456" } });
+    expect(mockSave).toHaveBeenCalledWith(expect.objectContaining({
+      code: "456", name: "New Name", description: "New Description" }));
   });
 
-  it("insufficient rights", async () => {
-    await expect(repo.insufficientRights()).rejects.toThrow(InsufficientRightsError);
-  });*/
+  it("update network - update without changing code", async () => {
+    const existingNetwork = new NetworkDAO();
+    existingNetwork.code = "SAME_CODE"; existingNetwork.name = "Old Name";
+    existingNetwork.description = "Old Description"; existingNetwork.gateways = [];
+
+    const updatedNetwork = new NetworkDAO();
+    updatedNetwork.code = "SAME_CODE"; updatedNetwork.name = "New Name";
+    updatedNetwork.description = "New Description"; updatedNetwork.gateways = [];
+
+    mockFind.mockResolvedValue([existingNetwork]);
+    mockSave.mockResolvedValue(updatedNetwork);
+
+    const result = await repo.updateNetwork("SAME_CODE", "SAME_CODE", "New Name", "New Description");
+
+    expect(result).toEqual(updatedNetwork);
+    expect(mockFind).toHaveBeenCalledTimes(1); // Only called once since code didn't change
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "SAME_CODE" } });
+    expect(mockSave).toHaveBeenCalledWith(expect.objectContaining({
+      code: "SAME_CODE", name: "New Name", description: "New Description" }));
+  });
+
+  it("update network - partial update with null/undefined values", async () => {
+    const existingNetwork = new NetworkDAO();
+    existingNetwork.code = "TEST_CODE"; 
+    existingNetwork.name = "Original Name";
+    existingNetwork.description = "Original Description"; 
+    existingNetwork.gateways = [];
+
+    mockFind.mockResolvedValue([existingNetwork]);
+    mockSave.mockResolvedValue(existingNetwork);
+
+    const result = await repo.updateNetwork("TEST_CODE", null, null, "New Description");
+
+    expect(mockSave).toHaveBeenCalledWith(expect.objectContaining({
+      code: "TEST_CODE",
+      name: "Original Name", 
+      description: "New Description" 
+    }));
+  });
+
+  it("update network - update with empty string values", async () => {
+    const existingNetwork = new NetworkDAO();
+    existingNetwork.code = "TEST_CODE"; existingNetwork.name = "Original Name";
+    existingNetwork.description = "Original Description"; existingNetwork.gateways = [];
+
+    mockFind.mockResolvedValue([existingNetwork]);
+    mockSave.mockResolvedValue(existingNetwork);
+
+    const result = await repo.updateNetwork("TEST_CODE", "", "", "");
+
+    expect(mockSave).toHaveBeenCalledWith(expect.objectContaining({
+      code: "TEST_CODE", // Should keep original code (empty string is falsy)
+      name: "Original Name", // Should keep original name (empty string is falsy)
+      description: "Original Description" // Should keep original description (empty string is falsy)
+    }));
+  });
+
+  it("update network - network not found", async () => {
+    mockFind.mockResolvedValue([]);
+
+    await expect(repo.updateNetwork("NONEXISTENT", "NEW_CODE", "New Name", "New Description"))
+      .rejects.toThrow(NotFoundError);
+    
+    expect(mockFind).toHaveBeenCalledWith({ where: { code: "NONEXISTENT" } });
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
+  it("update network - conflict, new code already exists", async () => {
+    const existingNetwork = new NetworkDAO();
+    existingNetwork.code = "OLD_CODE"; 
+    existingNetwork.name = "Old Name";
+    existingNetwork.description = "Old Description";
+
+    const conflictingNetwork = new NetworkDAO();
+    conflictingNetwork.code = "EXISTING_CODE";
+    conflictingNetwork.name = "Conflicting Network";
+
+    mockFind.mockResolvedValueOnce([existingNetwork]);
+    mockFind.mockResolvedValueOnce([conflictingNetwork]);
+
+    // attempting to update the existing network with a code that already exists
+    // the second find checks in a network with the new code already exist, throwis a conflict if found
+    await expect(repo.updateNetwork("OLD_CODE", "EXISTING_CODE", "New Name", "New Description"))
+      .rejects.toThrow(ConflictError);
+    
+    expect(mockFind).toHaveBeenCalledTimes(2);
+    expect(mockFind).toHaveBeenNthCalledWith(1, { where: { code: "OLD_CODE" } });
+    expect(mockFind).toHaveBeenNthCalledWith(2, { where: { code: "EXISTING_CODE" } });
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
 });
