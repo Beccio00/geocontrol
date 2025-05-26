@@ -5,7 +5,6 @@ import { Stats as StatsDTO } from "@models/dto/Stats";
 import {createMeasurementsDTO, createStatsDTO, mapMeasurementDAOToDTO } from "@services/mapperService";
 import { calcStats, processMeasurements, groupMeasurementsBySensor } from "@services/measurementsService";
 import { parseISODateParamToUTC } from "@utils";
-import AppError from "@models/errors/AppError";
 
 export async function getMeasurementsBySensor(
     networkCode: string, 
@@ -34,7 +33,12 @@ export async function getMeasurementsBySensor(
     )    
 }
 
-export async function storeMeasurement(networkCode:string, gatewayMac: string, sensorMac: string, measurements : MeasurementDTO[]) : Promise<void> {    
+export async function storeMeasurement(
+    networkCode:string, 
+    gatewayMac: string,
+    sensorMac: string, 
+    measurements : MeasurementDTO[]
+) : Promise<void> {    
     const measurementRepo = new MeasurementRepository();
     await Promise.all(
         measurements.map(async (measurement) => {
@@ -97,13 +101,12 @@ export async function getOutliersBySensor(
     )    
 }
 
-//FIXME: non filtra secondo i sensori inseiriti
 export async function getMeasuramentsByNetwork(
     networkCode: string,
     sensorMac?: string[],
     startDate?: string,
     endDate?: string
-  ): Promise<any[]> {
+  ): Promise<MeasurementsDTO[]> {
     const measurementRepo = new MeasurementRepository();
 
     const startDateISOUTC = parseISODateParamToUTC(startDate);
@@ -132,7 +135,7 @@ export async function getStatisticsByNetwork(
     sensorMac?: string[], 
     startDate?: string, 
     endDate?: string
-    ): Promise<any[]> {
+): Promise<StatsDTO[]> {
     const measurementRepo = new MeasurementRepository();
 
     const startDateISOUTC = parseISODateParamToUTC(startDate);
@@ -145,12 +148,10 @@ export async function getStatisticsByNetwork(
     return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
         return createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC);
     });
-    
-
 }
 
 
-export async function getOutliersByNetwork(networkCode: string, sensorMac?: string[], startDate?: string, endDate?: string): Promise<any[]> {
+export async function getOutliersByNetwork(networkCode: string, sensorMac?: string[], startDate?: string, endDate?: string): Promise<MeasurementsDTO[]> {
     const measurementRepo = new MeasurementRepository();
 
     const startDateISOUTC = parseISODateParamToUTC(startDate);

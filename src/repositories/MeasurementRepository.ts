@@ -143,31 +143,28 @@ export class MeasurementRepository{
         `Network with code '${networkCode}' not found`
     );
 
-    const gateways = await this.gatewayRepo.find({ where: { network: { code: networkCode } } });
+    const gateways = await this.gatewayRepo.find({ 
+      where: { network: { code: networkCode } } 
+    });
 
-    if (gateways.length === 0) {
-      return [];
-    }
-
+    if (!gateways.length) return [];
+  
     const gatewayIds = gateways.map(gateway => gateway.id);
 
-    // Trova i sensori nei gateway della rete (eventualmente filtrati per MAC)
     const sensorWhere: any = {
       gateway: { id: In(gatewayIds) }
     };
 
-    if (sensorMacs && sensorMacs.length > 0) {
-      sensorWhere.macAddress = In(sensorMacs);
-    }
+    sensorWhere.macAddress = sensorMacs ? In(sensorMacs) : sensorWhere.macAddress;
 
-    const sensors = await this.sensorRepo.find({ where: sensorWhere });
-    if (sensors.length === 0) {
-      return [];
-    }
+    const sensors = await this.sensorRepo.find({ 
+      where: sensorWhere 
+    });
+    
+    if (!sensors.length) return [];
 
-    const sensorIds = sensors.map(s => s.id);
+    const sensorIds = sensors.map(sensor => sensor.id);
 
-    // Costruisci il filtro per le misure
     const measurementWhere: any = {
       sensor: { id: In(sensorIds) }
     };
