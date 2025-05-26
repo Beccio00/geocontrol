@@ -185,5 +185,5 @@ export class MeasurementRepository{
       order: { createdAt: "ASC" },
       relations: { sensor: true }
     });
-  }
+  }  
 }

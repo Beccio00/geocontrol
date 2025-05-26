@@ -97,6 +97,7 @@ export async function getOutliersBySensor(
     )    
 }
 
+//FIXME: non filtra secondo i sensori inseiriti
 export async function getMeasuramentsByNetwork(
     networkCode: string,
     sensorMac?: string[],
@@ -108,7 +109,6 @@ export async function getMeasuramentsByNetwork(
     const startDateISOUTC = parseISODateParamToUTC(startDate);
     const endDateISOUTC = parseISODateParamToUTC(endDate);
 
-
     const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);    
     const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
 
@@ -117,20 +117,58 @@ export async function getMeasuramentsByNetwork(
         const stats = calcStats(measurements);
         const processed = processMeasurements(measurements, stats.upperThreshold, stats.lowerThreshold);
 
-        return MeasurementsToJSON(
-        createMeasurementsDTO(
+        return createMeasurementsDTO(
             sensorMac,
             createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC),
             processed.map(([m, isOutlier]) => mapMeasurementDAOToDTO(m, isOutlier))
         )
-        );
+    
     });
 } 
 
-export async function getStatisticsByNetwork(networkCode: string, sensorMac?: string[], startDate?: string, endDate?: string): Promise<any[]> {
-    throw new AppError("Method not implemented", 500);
+//FIXME: viene bloccato dal validatore di rete
+export async function getStatisticsByNetwork(
+    networkCode: string, 
+    sensorMac?: string[], 
+    startDate?: string, 
+    endDate?: string
+    ): Promise<any[]> {
+    const measurementRepo = new MeasurementRepository();
+
+    const startDateISOUTC = parseISODateParamToUTC(startDate);
+    const endDateISOUTC = parseISODateParamToUTC(endDate);
+
+    const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);
+    const stats = calcStats(sensorMeasurements);    
+    const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
+
+    return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
+        return createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC);
+    });
+    
+
 }
 
+
 export async function getOutliersByNetwork(networkCode: string, sensorMac?: string[], startDate?: string, endDate?: string): Promise<any[]> {
-    throw new AppError("Method not implemented", 500);
+    const measurementRepo = new MeasurementRepository();
+
+    const startDateISOUTC = parseISODateParamToUTC(startDate);
+    const endDateISOUTC = parseISODateParamToUTC(endDate);
+    const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);
+    const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
+   
+
+    return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
+        const stats = calcStats(measurements);
+        const processed = processMeasurements(measurements, stats.upperThreshold, stats.lowerThreshold);
+        return createMeasurementsDTO(
+            sensorMac,
+            createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC),
+            processed
+                .filter(([m, isOutlier]) => isOutlier)
+                .map(([m, isOutlier]) => mapMeasurementDAOToDTO(m, isOutlier))
+        );
+    });
+
 }

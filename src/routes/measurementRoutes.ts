@@ -135,10 +135,10 @@ router.get(
 router.get(
   CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/outliers",
   authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer]),
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       res.status(200).json(
-        getOutliersByNetwork(
+        await getOutliersByNetwork(
           req.params.networkCode,
           parseStringArrayParam(req.query.sensorMacs), 
           req.query.startDate as string | undefined, 
