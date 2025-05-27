@@ -7,13 +7,12 @@ import { ErrorDTO } from "@models/dto/ErrorDTO";
 import { UserType } from "@models/UserType";
 import { Sensor as SensorDTO } from "@models/dto/Sensor";
 import { SensorDAO } from "@models/dao/SensorDAO";
-import { create } from "domain";
 import { Gateway as GatewayDTO } from "@models/dto/Gateway";
 import { GatewayDAO } from "@models/dao/GatewayDAO";
 import { Measurement as MeasurementDTO } from "@dto/Measurement";
 import { Measurements as MeasurementsDTO } from "@dto/Measurements";
 import { MeasurementDAO } from "@dao/MeasurementDAO";
-import { Stats } from "@dto/Stats";
+import { Stats as StatsDTO} from "@dto/Stats";
 
 
 export function createErrorDTO(
@@ -56,7 +55,7 @@ function removeNullAttributes<T>(dto: T): Partial<T> {
       ([_, value]) =>
         value !== null &&
         value !== undefined &&
-        (!Array.isArray(value) || value.length >= 0)  //FIXME: set value.length > 0
+        (!Array.isArray(value) || value.length > 0)  
     )
   ) as Partial<T>;
 }
@@ -83,7 +82,6 @@ export function mapNetworkDAOToDTO(networkDAO: NetworkDAO): NetworkDTO {
      networkDAO.gateways?.map(mapGatewayDAOToDTO)
     ); 
 }
-
 
 export function createGatewayDTO(
   macAddress?: string,
@@ -140,67 +138,36 @@ export function createMeasurementDTO(
   }) as MeasurementDTO;
 }
 
-export function mapMeasurementDAOToDTO(
-  dao: MeasurementDAO,
-  stats?: Stats
-): MeasurementDTO {
-  // Calculate isOutlier dynamically if stats are provided
-  const isOutlier =
-    stats &&
-    (dao.value > stats.upperThreshold || dao.value < stats.lowerThreshold);
-
-  // Use createMeasurementDTO to construct the DTO
-  return createMeasurementDTO(dao.createdAt, dao.value, isOutlier);
-}
-
-export function createMeasurementsDTO(
-  sensorMacAddress?: string,
-  measurements?: MeasurementDTO[],
-  stats?: Stats
-): MeasurementsDTO {
-  return removeNullAttributes({
-    sensorMacAddress,
-    measurements,
-    stats,
-  }) as MeasurementsDTO;
-}
-
-export function mapMeasurementsToDTO(
-  sensorMacAddress: string,
-  measurementDAOs: MeasurementDAO[],
-  stats?: Stats
-): MeasurementsDTO {
-  return createMeasurementsDTO(
-    sensorMacAddress,
-    measurementDAOs,
-    stats
-  );
+export function mapMeasurementDAOToDTO(MeasurementDAO : MeasurementDAO, isOutlier:boolean): MeasurementDTO{
+  return createMeasurementDTO(MeasurementDAO.createdAt, MeasurementDAO.value, isOutlier);
 }
 
 export function createStatsDTO(
-  mean?: number,
-  variance?: number,
-  upperThreshold?: number,
-  lowerThreshold?: number
-): Stats {
+  mean : number,
+  variance : number,
+  upperThreshold : number,
+  lowerThreshold : number,
+  startDate? : Date,
+  endDate? : Date
+): StatsDTO {
   return removeNullAttributes({
+    startDate,
+    endDate,
     mean,
     variance,
     upperThreshold,
-    lowerThreshold,
-  }) as Stats;
+    lowerThreshold
+  }) as StatsDTO
 }
 
-export function mapStatsToDTO(stats: {
-  mean: number;
-  variance: number;
-  upperThreshold: number;
-  lowerThreshold: number;
-}): Stats {
-  return createStatsDTO(
-    stats.mean,
-    stats.variance,
-    stats.upperThreshold,
-    stats.lowerThreshold
-  );
+export function createMeasurementsDTO(
+  sensorMacAddress : string,
+  stats? : StatsDTO,
+  measurements? : Array<MeasurementDTO>
+) : MeasurementsDTO {
+  return removeNullAttributes({
+    sensorMacAddress,
+    stats,
+    measurements
+  }) as MeasurementsDTO
 }
