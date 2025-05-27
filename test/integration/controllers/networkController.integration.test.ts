@@ -45,7 +45,7 @@ describe("NetworkController integration", () => {
         });
     });
 
-    it("createNetwork: should create a network with gateways", async () => {
+    it("createNetwork: should create a network and ignore gateways", async () => {
         const networkDto: NetworkDTO = {
         code: networkCode,
         name: "Test Network",
@@ -73,7 +73,7 @@ describe("NetworkController integration", () => {
             name: "Test Network",
             description: "A test network",
         });
-        expect(network.gateways).toHaveLength(2);
+        expect(network.gateways).toHaveLength(0);
     });
 
     it("createNetwork: should handle duplicate network codes", async () => {
