@@ -240,22 +240,5 @@ describe("NetworkController integration", () => {
         await expect(networkController.deleteNetwork("non-existent-code")).rejects.toThrow(NotFoundError);
     });
 
-    /*
-    it("getAllNetworks: should handle networks with complex gateway structures", async () => {
-        await networkRepo.createNetwork("NET1", "Network 1", "Description 1", []);
-        await networkRepo.createNetwork("NET2", "Network 2", "Description 2", []);
-        
-        // Add gateways to networks
-        await gatewayRepo.createGateway("NET1", "AA:BB:CC:DD:EE:FF", "Gateway 1", "Description 1", []);
-        await gatewayRepo.createGateway("NET2", "11:22:33:44:55:66", "Gateway 2", "Description 2", []);
-
-        const result = await networkController.getAllNetworks();
-
-        expect(result).toHaveLength(2);
-        const net1 = result.find(n => n.code === "NET1");
-        const net2 = result.find(n => n.code === "NET2");
-        
-        expect(net1.gateways).toHaveLength(1);
-        expect(net2.gateways).toHaveLength(1);
-    });*/
+    
 });
