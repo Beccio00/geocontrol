@@ -1,89 +1,130 @@
-import { getMeasurementsBySensorsAndNetwork, getMeasurementsBySensor, getSensorStats, getNetworkStats, getNetworkOutliers, getSensorOutliers, storeMeasurements, createMeasurement,} from "@services/measurementsService";
-import {Measurement} from "@dto/Measurement";
-import {Stats} from "@dto/Stats";
-import {Measurements} from "@dto/Measurements";
+import { Measurement as MeasurementDTO } from "@dto/Measurement";
+import { Measurements as MeasurementsDTO } from "@dto/Measurements"
+import { MeasurementRepository } from "@repositories/MeasurementRepository";
+import { Stats as StatsDTO } from "@models/dto/Stats";
+import { createStatsDTO } from "@services/mapperService";
+import { calcStats, initializeRepositoryAndDates, processSensorMeasurements } from "@services/measurementsService";
 
 
-// Controller for storing measurements
-export async function storeMeasurementsController(
-    networkCode: string,
-    gatewayMac: string,
-    sensorMac: string,
-    measurements: Measurement[]
-): Promise<void> {
-    await storeMeasurements(networkCode, gatewayMac, sensorMac, measurements);
-}
-
-// Controller for creating a single measurement
-export async function createMeasurementController(
-    networkCode: string,
-    gatewayMac: string,
-    sensorMac: string,
-    value: number,
-    createdAt: Date
-): Promise<void> {
-    await createMeasurement(networkCode, gatewayMac, sensorMac, value, createdAt);
-}
-
-// Controller for retrieving measurements for multiple sensors in a network
-export async function getMeasurementsBySensorsAndNetworkController(
-    networkCode: string,
-    sensorMacs: string[],
-    startDate?: string,
-    endDate?: string
-): Promise<Measurements[]> {
-    return await getMeasurementsBySensorsAndNetwork(networkCode, sensorMacs, startDate, endDate);
-}
-
-// Controller for retrieving measurements for a single sensor
-export async function getMeasurementsBySensorController(
-    networkCode: string,
+export async function getMeasurementsBySensor(
+    networkCode: string, 
     gatewayMac: string,
     sensorMac: string,
     startDate?: string,
     endDate?: string
-): Promise<Measurements> {
-    return await getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDate, endDate);
+): Promise<MeasurementsDTO> {
+    const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
+    
+    const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
+    
+    return processSensorMeasurements(sensorMac, sensorMeasurements, startDateISOUTC, endDateISOUTC);
 }
 
-// Controller for retrieving statistics for a single sensor
-export async function getSensorStatsController(
-    networkCode: string,
+export async function storeMeasurement(
+    networkCode: string, 
+    gatewayMac: string,
+    sensorMac: string, 
+    measurements: MeasurementDTO[]
+): Promise<void> {    
+    const measurementRepo = new MeasurementRepository();
+    await Promise.all(
+        measurements.map(async (measurement) => {
+            await measurementRepo.storeMeasurement(
+                networkCode,
+                gatewayMac,
+                sensorMac,
+                measurement.value,
+                measurement.createdAt
+            );
+        })
+    );
+}
+
+export async function getStatisticsBySensor(
+    networkCode: string, 
     gatewayMac: string,
     sensorMac: string,
     startDate?: string,
     endDate?: string
-): Promise<Stats> {
-    return await getSensorStats(networkCode, gatewayMac, sensorMac, startDate, endDate);
+): Promise<StatsDTO> {
+    const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
+    
+    const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
+    const stats = calcStats(sensorMeasurements);
+
+    return createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC);
 }
 
-// Controller for retrieving statistics for multiple sensors in a network
-export async function getNetworkStatsController(
-    networkCode: string,
-    sensorMacs: string[],
-    startDate?: string,
-    endDate?: string
-): Promise<Measurements[]> {
-    return await getNetworkStats(networkCode, sensorMacs, startDate, endDate);
-}
-
-// Controller for retrieving outliers for multiple sensors in a network
-export async function getNetworkOutliersController(
-    networkCode: string,
-    sensorMacs: string[],
-    startDate?: string,
-    endDate?: string
-): Promise<Measurements[]> {
-    return await getNetworkOutliers(networkCode, sensorMacs, startDate, endDate);
-}
-
-// Controller for retrieving outliers for a single sensor
-export async function getSensorOutliersController(
-    networkCode: string,
+export async function getOutliersBySensor(
+    networkCode: string, 
     gatewayMac: string,
     sensorMac: string,
     startDate?: string,
     endDate?: string
-): Promise<Measurements> {
-    return await getSensorOutliers(networkCode, gatewayMac, sensorMac, startDate, endDate);
+): Promise<MeasurementsDTO> {
+    const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
+    
+    const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
+    
+    return processSensorMeasurements(sensorMac, sensorMeasurements, startDateISOUTC, endDateISOUTC, true, true);
+}
+
+export async function getMeasuramentsByNetwork(
+    networkCode: string,
+    sensorMacs?: string[],
+    startDate?: string,
+    endDate?: string
+): Promise<MeasurementsDTO[]> {
+    const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
+      
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+
+    const results: MeasurementsDTO[] = [];
+    
+    for (const measurement of sensorsMeasurements) {
+        const measurementsDTO = processSensorMeasurements(measurement.sensorMac,measurement.measurements, startDateISOUTC, endDateISOUTC);        
+        results.push(measurementsDTO); 
+    }
+
+    return results;
+} 
+
+export async function getStatisticsByNetwork(
+    networkCode: string, 
+    sensorMacs?: string[], 
+    startDate?: string, 
+    endDate?: string
+    ): Promise<MeasurementsDTO[]> {
+    const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
+    
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+
+    const results: MeasurementsDTO[] = [];
+    
+    for (const measurement of sensorsMeasurements) {
+        const measurementsDTO = processSensorMeasurements(measurement.sensorMac,measurement.measurements, startDateISOUTC, endDateISOUTC,false,false);        
+        results.push(measurementsDTO); 
+    }
+
+    return results;
+}
+
+export async function getOutliersByNetwork(
+    networkCode: string, 
+    sensorMacs?: string[],
+    startDate?: string,
+    endDate?: string
+): Promise<MeasurementsDTO[]> {
+    const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
+    
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+
+    const results: MeasurementsDTO[] = [];
+    
+    for (const measurement of sensorsMeasurements) {
+        const measurementsDTO = processSensorMeasurements(measurement.sensorMac,measurement.measurements, startDateISOUTC, endDateISOUTC,true,true);        
+        results.push(measurementsDTO); 
+    }
+
+    return results;
 }
