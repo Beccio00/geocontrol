@@ -91,17 +91,34 @@ export async function getStatisticsByNetwork(
     ): Promise<any[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
     
-    const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);
-    const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
-
-    return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
-        const stats = calcStats(measurements);
+    const groupedMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);
+    // const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
+    
+    const results: MeasurementsDTO[] = [];
+    
+    for (const measurement of groupedMeasurements) {
+        const stats = calcStats(measurement);
+        const processedMeasurements = processMeasurements(measurement, stats.upperThreshold, stats.lowerThreshold);
         
-        return {
-            sensorMacAddress: sensorMac,
-            stats: createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC)
-        };
-    });
+        const dto = createMeasurementsDTO(
+                measurement.sensorMac,
+                measurement.measurements.length > 0 ? createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC): undefined,
+               // measurement.measurements.length > 0 ? processedMeasurements.map(([m, isOutlier]) =>  mapMeasurementDAOToDTO(m, isOutlier)) : undefined
+            )
+        results.push(dto);
+    }
+
+    return results;
+
+
+    // return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
+    //     const stats = calcStats(measurements);
+        
+    //     return {
+    //         sensorMacAddress: sensorMac,
+    //         stats: createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC)
+    //     };
+    // });
 }
 
 export async function getOutliersByNetwork(

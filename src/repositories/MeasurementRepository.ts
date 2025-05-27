@@ -135,7 +135,7 @@ export class MeasurementRepository{
     sensorMacs?: string[],
     startDate?: Date,
     endDate?: Date,
-  ): Promise<MeasurementDAO[]> {
+  ): Promise<any[]> {
 
     findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } } ),
@@ -177,10 +177,25 @@ export class MeasurementRepository{
       measurementWhere.createdAt = LessThanOrEqual(endDate);
     }
 
-    return this.repo.find({
+    const measurement = await this.repo.find({
       where: measurementWhere,
       order: { createdAt: "ASC" },
       relations: { sensor: true }
     });
+
+    const measurementsBySensor: Record<string, MeasurementDAO[]> = {};
+    measurement.forEach(m => {
+      const sensorMac = m.sensor.macAddress;
+      if (!measurementsBySensor[sensorMac]) {
+        measurementsBySensor[sensorMac] = [];
+      }
+      measurementsBySensor[sensorMac].push(m);
+    });
+ 
+    return Object.entries(measurementsBySensor).map(([sensorMac, measurements]) => ({
+      sensorMac,
+      measurements
+    }));
+
   }  
 }

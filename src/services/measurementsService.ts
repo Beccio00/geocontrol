@@ -42,6 +42,7 @@ export  function calcStats(measurements : MeasurementDAO[]){
     };
 }
 
+//fixme togli
 export function groupMeasurementsBySensor(measurements: MeasurementDAO[]): Record<string, MeasurementDAO[]> {
     const groupedMeasurements: Record<string, MeasurementDAO[]> = {};
     measurements.forEach(measurement => {
