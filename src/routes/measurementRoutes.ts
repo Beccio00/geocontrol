@@ -112,8 +112,7 @@ router.get( CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/measurements",
 });
 
 // Retrieve statistics for a set of sensors of a specific network
-router.get(
-  CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/stats",
+router.get( CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/stats",
   authenticateUser([UserType.Admin, UserType.Operator, UserType.Viewer]),
   async (req, res, next) => {
     try {

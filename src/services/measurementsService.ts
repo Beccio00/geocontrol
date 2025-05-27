@@ -1,4 +1,9 @@
 import { MeasurementDAO } from "@models/dao/MeasurementDAO";
+import { MeasurementsToJSON } from "@models/dto/Measurements";
+import { MeasurementRepository } from "@repositories/MeasurementRepository";
+import { parseISODateParamToUTC } from "@utils";
+import { Measurements as MeasurementsDTO } from "@models/dto/Measurements";
+import { createMeasurementsDTO, createStatsDTO, mapMeasurementDAOToDTO } from "./mapperService";
 
 export function processMeasurements(measurements : MeasurementDAO[], upperThreshold : number, lowerThreshold : number){
     return measurements.map(m => {
@@ -48,4 +53,49 @@ export function groupMeasurementsBySensor(measurements: MeasurementDAO[]): Recor
         return groupedMeasurements;
     });
     return groupedMeasurements;
+}
+
+
+export function initializeRepositoryAndDates(startDate?: string, endDate?: string) {
+    return {
+        measurementRepo: new MeasurementRepository(),
+        startDateISOUTC: parseISODateParamToUTC(startDate),
+        endDateISOUTC: parseISODateParamToUTC(endDate)
+    };
+}
+
+export function processSensorMeasurements(
+    sensorMac: string,
+    measurements: any[],
+    startDateISOUTC?: Date,
+    endDateISOUTC?: Date,
+    filterOutliers: boolean = false
+): MeasurementsDTO {
+    const stats = calcStats(measurements);
+    const processedMeasurements = processMeasurements(measurements, stats.upperThreshold, stats.lowerThreshold);
+    
+    let filteredMeasurements = processedMeasurements;
+    if (filterOutliers) {
+        filteredMeasurements = processedMeasurements.filter(([m, isOutlier]) => isOutlier);
+    }
+
+    return MeasurementsToJSON(
+        createMeasurementsDTO(
+            sensorMac,
+            createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC),
+            filteredMeasurements.map(([m, isOutlier]) => mapMeasurementDAOToDTO(m, isOutlier))
+        )
+    );
+}
+
+
+export function processNetworkMeasurements(
+    groupedMeasurements: { [key: string]: any[] },
+    startDateISOUTC?: Date,
+    endDateISOUTC?: Date,
+    filterOutliers: boolean = false
+): MeasurementsDTO[] {
+    return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
+        return processSensorMeasurements(sensorMac, measurements, startDateISOUTC, endDateISOUTC, filterOutliers);
+    });
 }
