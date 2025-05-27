@@ -1,6 +1,5 @@
 import { AppDataSource } from "@database";
 import { Repository, LessThanOrEqual, MoreThanOrEqual, Between, In } from "typeorm";
-
 import { SensorDAO } from "@dao/SensorDAO";
 import { GatewayDAO } from "@models/dao/GatewayDAO";
 import { NetworkDAO } from "@models/dao/NetworkDAO";
@@ -27,13 +26,12 @@ export class MeasurementRepository{
       value: number,
       createdAt: Date,
   ): Promise<MeasurementDAO> {
-    //validazione networkCode
+    
     findOrThrowNotFound(
     await this.networkRepo.find({ where: { code: networkCode } }),
     () => true,
     `Network with code '${networkCode}' not found `
-    );    
-    //validazione gatewayMac    
+    );       
     findOrThrowNotFound(
       await this.gatewayRepo.find({
         where: {
@@ -44,7 +42,6 @@ export class MeasurementRepository{
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`
     ); 
-    //validazione sensorMac
     const sensor = findOrThrowNotFound(
       await this.sensorRepo.find({ 
         where: {      
@@ -75,13 +72,13 @@ export class MeasurementRepository{
     startDate?: Date,
     endDate? : Date
   ): Promise<MeasurementDAO[]>{
-    //validazione networkCode
+    
     findOrThrowNotFound(
     await this.networkRepo.find({ where: { code: networkCode } }),
     () => true,
     `Network with code '${networkCode}' not found `
     );    
-    //validazione gatewayMac    
+        
     findOrThrowNotFound(
       await this.gatewayRepo.find({
         where: {
@@ -92,7 +89,7 @@ export class MeasurementRepository{
       () => true,
       `Gateway with mac '${gatewayMac}' not found in network '${networkCode}'`
     ); 
-    //validazione sensorMac
+    
     findOrThrowNotFound(
       await this.sensorRepo.find({ 
         where: {      
@@ -127,7 +124,7 @@ export class MeasurementRepository{
     endDate ? LessThanOrEqual(endDate) :
     undefined;
 
-    return await this.repo.find({ where });
+    return await this.repo.find({ where, order: { createdAt: "ASC" }});
   }   
 
   async getMeasurementsByNetwork(
@@ -135,7 +132,7 @@ export class MeasurementRepository{
     sensorMacs?: string[],
     startDate?: Date,
     endDate?: Date,
-  ): Promise<any[]> {
+  ): Promise<{ sensorMac: string; measurements: MeasurementDAO[] }[]> {
 
     findOrThrowNotFound(
       await this.networkRepo.find({ where: { code: networkCode } } ),
@@ -184,18 +181,19 @@ export class MeasurementRepository{
     });
 
     const measurementsBySensor: Record<string, MeasurementDAO[]> = {};
-    measurement.forEach(m => {
-      const sensorMac = m.sensor.macAddress;
-      if (!measurementsBySensor[sensorMac]) {
-        measurementsBySensor[sensorMac] = [];
-      }
-      measurementsBySensor[sensorMac].push(m);
+    sensors.forEach(sensor => {
+      measurementsBySensor[sensor.macAddress] = [];
     });
- 
+
+    
+    measurement.forEach(m => {
+      const mac = m.sensor.macAddress;
+      measurementsBySensor[mac].push(m);
+    });
+
     return Object.entries(measurementsBySensor).map(([sensorMac, measurements]) => ({
       sensorMac,
       measurements
     }));
-
   }  
 }

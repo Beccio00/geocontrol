@@ -1,10 +1,10 @@
-import {Measurement as MeasurementDTO} from "@dto/Measurement";
-import {Measurements as MeasurementsDTO, MeasurementsToJSON} from "@dto/Measurements"
-import {MeasurementRepository} from "@repositories/MeasurementRepository";
+import { Measurement as MeasurementDTO } from "@dto/Measurement";
+import { Measurements as MeasurementsDTO } from "@dto/Measurements"
+import { MeasurementRepository } from "@repositories/MeasurementRepository";
 import { Stats as StatsDTO } from "@models/dto/Stats";
-import {createMeasurementsDTO, createStatsDTO, mapMeasurementDAOToDTO } from "@services/mapperService";
-import { calcStats, processMeasurements, groupMeasurementsBySensor, initializeRepositoryAndDates, processSensorMeasurements, processNetworkMeasurements } from "@services/measurementsService";
-import { parseISODateParamToUTC } from "@utils";
+import { createStatsDTO } from "@services/mapperService";
+import { calcStats, initializeRepositoryAndDates, processSensorMeasurements } from "@services/measurementsService";
+
 
 export async function getMeasurementsBySensor(
     networkCode: string, 
@@ -66,71 +66,65 @@ export async function getOutliersBySensor(
     
     const sensorMeasurements = await measurementRepo.getMeasurementsBySensor(networkCode, gatewayMac, sensorMac, startDateISOUTC, endDateISOUTC);
     
-    return processSensorMeasurements(sensorMac, sensorMeasurements, startDateISOUTC, endDateISOUTC, true);
+    return processSensorMeasurements(sensorMac, sensorMeasurements, startDateISOUTC, endDateISOUTC, true, true);
 }
 
 export async function getMeasuramentsByNetwork(
     networkCode: string,
-    sensorMac?: string[],
+    sensorMacs?: string[],
     startDate?: string,
     endDate?: string
 ): Promise<MeasurementsDTO[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
-    
-    const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);    
-    const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
+      
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
 
-    return processNetworkMeasurements(groupedMeasurements, startDateISOUTC, endDateISOUTC);
+    const results: MeasurementsDTO[] = [];
+    
+    for (const measurement of sensorsMeasurements) {
+        const measurementsDTO = processSensorMeasurements(measurement.sensorMac,measurement.measurements, startDateISOUTC, endDateISOUTC);        
+        results.push(measurementsDTO); 
+    }
+
+    return results;
 } 
 
 export async function getStatisticsByNetwork(
     networkCode: string, 
-    sensorMac?: string[], 
+    sensorMacs?: string[], 
     startDate?: string, 
     endDate?: string
-    ): Promise<any[]> {
+    ): Promise<MeasurementsDTO[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
     
-    const groupedMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);
-    // const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
-    
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+
     const results: MeasurementsDTO[] = [];
     
-    for (const measurement of groupedMeasurements) {
-        const stats = calcStats(measurement);
-        const processedMeasurements = processMeasurements(measurement, stats.upperThreshold, stats.lowerThreshold);
-        
-        const dto = createMeasurementsDTO(
-                measurement.sensorMac,
-                measurement.measurements.length > 0 ? createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC): undefined,
-               // measurement.measurements.length > 0 ? processedMeasurements.map(([m, isOutlier]) =>  mapMeasurementDAOToDTO(m, isOutlier)) : undefined
-            )
-        results.push(dto);
+    for (const measurement of sensorsMeasurements) {
+        const measurementsDTO = processSensorMeasurements(measurement.sensorMac,measurement.measurements, startDateISOUTC, endDateISOUTC,false,false);        
+        results.push(measurementsDTO); 
     }
 
     return results;
-
-
-    // return Object.entries(groupedMeasurements).map(([sensorMac, measurements]) => {
-    //     const stats = calcStats(measurements);
-        
-    //     return {
-    //         sensorMacAddress: sensorMac,
-    //         stats: createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC)
-    //     };
-    // });
 }
 
 export async function getOutliersByNetwork(
     networkCode: string, 
-    sensorMac?: string[],
+    sensorMacs?: string[],
     startDate?: string,
     endDate?: string
 ): Promise<MeasurementsDTO[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
     
-    const sensorMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMac, startDateISOUTC, endDateISOUTC);
-    const groupedMeasurements = groupMeasurementsBySensor(sensorMeasurements);
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
 
-    return processNetworkMeasurements(groupedMeasurements, startDateISOUTC, endDateISOUTC, true);
+    const results: MeasurementsDTO[] = [];
+    
+    for (const measurement of sensorsMeasurements) {
+        const measurementsDTO = processSensorMeasurements(measurement.sensorMac,measurement.measurements, startDateISOUTC, endDateISOUTC,true,true);        
+        results.push(measurementsDTO); 
+    }
+
+    return results;
 }
