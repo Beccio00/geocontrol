@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { SensorDAO } from "./SensorDAO";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { SensorDAO as Sensor} from "./SensorDAO";
+
 
 @Entity("measurements")
 export class MeasurementDAO {
@@ -12,6 +13,11 @@ export class MeasurementDAO {
   @Column({ type: "datetime", nullable: false })
   createdAt: Date;
 
-  @ManyToOne(() => SensorDAO, (sensor) => sensor.measurements, { nullable: false })
-  sensor: SensorDAO;
+  @ManyToOne(() => Sensor, (sensor) => sensor.measurements, { 
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  @JoinColumn({ name: 'sensorId' })
+  sensor: Sensor;
+  
 }
