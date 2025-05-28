@@ -83,7 +83,7 @@ describe("NetworkRepository: mocked database", () => {
     newNetwork.name = "Network 1";
     newNetwork.description = "Description 1";
     newNetwork.gateways = [];
-    mockFind.mockResolvedValue([]); // No existing networks with this code
+    mockFind.mockResolvedValue([]); // no networks with this code
     mockSave.mockResolvedValue(newNetwork);
 
     const result = await repo.createNetwork(newNetwork.code, newNetwork.name, newNetwork.description, newNetwork.gateways);
@@ -226,9 +226,9 @@ describe("NetworkRepository: mocked database", () => {
     const result = await repo.updateNetwork("TEST_CODE", "", "", "");
 
     expect(mockSave).toHaveBeenCalledWith(expect.objectContaining({
-      code: "TEST_CODE", // Should keep original code (empty string is falsy)
-      name: "Original Name", // Should keep original name (empty string is falsy)
-      description: "Original Description" // Should keep original description (empty string is falsy)
+      code: "TEST_CODE", // keep original code (empty string is falsy)
+      name: "Original Name", // keep original name (empty string is falsy)
+      description: "Original Description" // keep original description (empty string is falsy)
     }));
   });
 
@@ -256,7 +256,7 @@ describe("NetworkRepository: mocked database", () => {
     mockFind.mockResolvedValueOnce([conflictingNetwork]);
 
     // attempting to update the existing network with a code that already exists
-    // the second find checks in a network with the new code already exist, throwis a conflict if found
+    // the second find checks in a network with the new code already exist, throws a conflict if found
     await expect(repo.updateNetwork("OLD_CODE", "EXISTING_CODE", "New Name", "New Description"))
       .rejects.toThrow(ConflictError);
     

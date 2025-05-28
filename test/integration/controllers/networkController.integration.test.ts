@@ -225,7 +225,7 @@ describe("NetworkController integration", () => {
 
         await expect(networkRepo.getNetworkByCode(networkCode)).rejects.toThrow(NotFoundError);
     });
-    /*
+    
     it("deleteNetwork: should delete network and its gateways", async () => {
         await networkRepo.createNetwork(networkCode, "Test Network", "A test network", []);
         await gatewayRepo.createGateway(networkCode, "AA:BB:CC:DD:EE:FF", "Gateway 1", "Description 1", []);
@@ -234,7 +234,7 @@ describe("NetworkController integration", () => {
 
         await expect(networkRepo.getNetworkByCode(networkCode)).rejects.toThrow(NotFoundError);
         await expect(gatewayRepo.getGateway(networkCode, "AA:BB:CC:DD:EE:FF")).rejects.toThrow(NotFoundError);
-    });*/
+    });
 
     it("deleteNetwork: should throw NotFoundError if network does not exist", async () => {
         await expect(networkController.deleteNetwork("non-existent-code")).rejects.toThrow(NotFoundError);
