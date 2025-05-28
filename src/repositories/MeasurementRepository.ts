@@ -191,6 +191,15 @@ export class MeasurementRepository{
       measurementsBySensor[mac].push(m);
     });
 
+    if (sensorMacs) {
+      const sensorsSet = new Set(sensors.map(s => s.macAddress));
+      const realAndUniqueMacs = [...new Set(sensorMacs.filter(mac => sensorsSet.has(mac)))];
+      return realAndUniqueMacs.map(mac => ({
+        sensorMac: mac,
+        measurements: measurementsBySensor[mac] || []
+      }));
+    }
+
     return Object.entries(measurementsBySensor).map(([sensorMac, measurements]) => ({
       sensorMac,
       measurements
