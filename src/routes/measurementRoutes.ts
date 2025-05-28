@@ -1,15 +1,15 @@
 import { CONFIG } from "@config";
 import { getMeasurementsBySensor, getOutliersBySensor, getStatisticsBySensor, storeMeasurement, getMeasuramentsByNetwork, getOutliersByNetwork, getStatisticsByNetwork } from "@controllers/measurementController";
 import { authenticateUser } from "@middlewares/authMiddleware";
+import { validateDateRangeMiddleware } from "@middlewares/validationMiddleware";
 import { MeasurementFromJSON } from "@models/dto/Measurement";
-import AppError from "@models/errors/AppError";
 import { UserType } from "@models/UserType";
 import { parseStringArrayParam } from "@utils";
 import { Router } from "express";
-//import { getMeasuramentsByNetwork } from "@controllers/measurementController";
 
 
 const router = Router();
+router.use(validateDateRangeMiddleware);
 
 // Store a measurement for a sensor (Admin & Operator)
 router.post( 
@@ -100,7 +100,7 @@ router.get( CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/measurements",
     res.status(200).json(
       await getMeasuramentsByNetwork(
         req.params.networkCode,
-        parseStringArrayParam(req.query.sensorMacs),
+        req.query.sensorMacs as string[] | undefined,
         req.query.startDate as string | undefined,
         req.query.endDate as string | undefined,
       )
@@ -119,7 +119,7 @@ router.get( CONFIG.ROUTES.V1_NETWORKS + "/:networkCode/stats",
       res.status(200).json(
         await getStatisticsByNetwork(
           req.params.networkCode,
-          parseStringArrayParam(req.query.sensorMacs), 
+          req.query.sensorMacs as string[] | undefined, 
           req.query.startDate as string | undefined, 
           req.query.endDate as string | undefined
         )
@@ -139,7 +139,7 @@ router.get(
       res.status(200).json(
         await getOutliersByNetwork(
           req.params.networkCode,
-          parseStringArrayParam(req.query.sensorMacs), 
+          req.query.sensorMacs as string[] | undefined, 
           req.query.startDate as string | undefined, 
           req.query.endDate as string | undefined
         )
