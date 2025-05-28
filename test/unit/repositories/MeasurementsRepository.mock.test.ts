@@ -140,7 +140,6 @@ describe("MeasurementRepository: mocked database", () => {
 
   describe("getMeasurementsBySensor", () => {
     it("should get measurements by sensor with date range", async () => {
-      // Mock validations
       const network = new NetworkDAO();
       network.code = "NET001";
       mockNetworkFind.mockResolvedValue([network]);
@@ -153,7 +152,6 @@ describe("MeasurementRepository: mocked database", () => {
       sensor.macAddress = "11:22:33:44:55:66";
       mockSensorFind.mockResolvedValue([sensor]);
 
-      // Mock measurements
       const measurements = [
         { value: 25.5, createdAt: new Date(), sensor },
         { value: 26.0, createdAt: new Date(), sensor }
