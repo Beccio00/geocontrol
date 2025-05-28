@@ -1,15 +1,15 @@
 import { CONFIG } from "@config";
 import { getMeasurementsBySensor, getOutliersBySensor, getStatisticsBySensor, storeMeasurement, getMeasuramentsByNetwork, getOutliersByNetwork, getStatisticsByNetwork } from "@controllers/measurementController";
 import { authenticateUser } from "@middlewares/authMiddleware";
+import { validateDateRangeMiddleware } from "@middlewares/validationMiddleware";
 import { MeasurementFromJSON } from "@models/dto/Measurement";
-import AppError from "@models/errors/AppError";
 import { UserType } from "@models/UserType";
 import { parseStringArrayParam } from "@utils";
 import { Router } from "express";
-//import { getMeasuramentsByNetwork } from "@controllers/measurementController";
 
 
 const router = Router();
+router.use(validateDateRangeMiddleware);
 
 // Store a measurement for a sensor (Admin & Operator)
 router.post( 

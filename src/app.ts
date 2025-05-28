@@ -23,6 +23,7 @@ app.use(
   swaggerUi.setup(YAML.load(CONFIG.SWAGGER_V1_FILE_PATH))
 );
 app.use(ApiValidationMiddleware);
+
 app.use(CONFIG.ROUTES.V1_AUTH, authenticationRouter);
 app.use(CONFIG.ROUTES.V1_USERS, userRouter);
 app.use(CONFIG.ROUTES.V1_NETWORKS, networkRouter);
