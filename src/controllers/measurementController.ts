@@ -4,6 +4,7 @@ import { MeasurementRepository } from "@repositories/MeasurementRepository";
 import { Stats as StatsDTO } from "@models/dto/Stats";
 import { createStatsDTO } from "@services/mapperService";
 import { calcStats, initializeRepositoryAndDates, processSensorMeasurements } from "@services/measurementsService";
+import { parseStringArrayParam } from "@utils";
 
 
 export async function getMeasurementsBySensor(
@@ -76,8 +77,8 @@ export async function getMeasuramentsByNetwork(
     endDate?: string
 ): Promise<MeasurementsDTO[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
-      
-    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+    const parsedSensorMacs = parseStringArrayParam(sensorMacs);  
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, parsedSensorMacs, startDateISOUTC, endDateISOUTC);
 
     const results: MeasurementsDTO[] = [];
     
@@ -96,8 +97,8 @@ export async function getStatisticsByNetwork(
     endDate?: string
     ): Promise<MeasurementsDTO[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
-    
-    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+    const parsedSensorMacs = parseStringArrayParam(sensorMacs);
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, parsedSensorMacs, startDateISOUTC, endDateISOUTC);
 
     const results: MeasurementsDTO[] = [];
     
@@ -116,8 +117,8 @@ export async function getOutliersByNetwork(
     endDate?: string
 ): Promise<MeasurementsDTO[]> {
     const { measurementRepo, startDateISOUTC, endDateISOUTC } = initializeRepositoryAndDates(startDate, endDate);
-    
-    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, sensorMacs, startDateISOUTC, endDateISOUTC);
+    const parsedSensorMacs = parseStringArrayParam(sensorMacs);
+    const sensorsMeasurements = await measurementRepo.getMeasurementsByNetwork(networkCode, parsedSensorMacs, startDateISOUTC, endDateISOUTC);
 
     const results: MeasurementsDTO[] = [];
     
@@ -128,3 +129,5 @@ export async function getOutliersByNetwork(
 
     return results;
 }
+
+
