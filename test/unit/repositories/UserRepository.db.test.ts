@@ -24,6 +24,21 @@ beforeEach(async () => {
 describe("UserRepository: SQLite in-memory", () => {
   const repo = new UserRepository();
   
+  it("get all user", async () => {
+    await repo.createUser("john", "pass123", UserType.Admin);
+    await repo.createUser("jack", "password", UserType.Viewer);
+
+    const allUsers = await repo.getAllUsers();
+
+    expect(allUsers).toHaveLength(2);
+
+    expect(allUsers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ username: "john", type: UserType.Admin }),
+        expect.objectContaining({ username: "jack", type: UserType.Viewer })
+      ])
+    );
+  })
   it("create user", async () => {
     const user = await repo.createUser("john", "pass123", UserType.Admin);
     expect(user).toMatchObject({
@@ -35,13 +50,11 @@ describe("UserRepository: SQLite in-memory", () => {
     const found = await repo.getUserByUsername("john");
     expect(found.username).toBe("john");
   });
-
   it("find user by username: not found", async () => {
     await expect(repo.getUserByUsername("ghost")).rejects.toThrow(
       NotFoundError
     );
   });
-
   it("create user: conflict", async () => {
     await repo.createUser("john", "pass123", UserType.Admin);
     await expect(
@@ -56,19 +69,9 @@ describe("UserRepository: SQLite in-memory", () => {
       repo.getUserByUsername("john")
     ).rejects.toThrow(NotFoundError);
   })
-  it("get all user", async () => {
-    const user1 = await repo.createUser("john", "pass123", UserType.Admin);
-    const user2 = await repo.createUser("jack", "password", UserType.Viewer);
-
-    const allUsers = await repo.getAllUsers();
-
-    expect(allUsers).toHaveLength(2);
-
-    expect(allUsers).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ username: "john", type: UserType.Admin }),
-        expect.objectContaining({ username: "jack", type: UserType.Viewer })
-      ])
+  it("delete user: not found", async () => { 
+    await expect(repo.deleteUser("ghost")).rejects.toThrow(
+      NotFoundError
     );
-  })
+  })  
 });
