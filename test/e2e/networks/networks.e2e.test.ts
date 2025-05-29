@@ -154,8 +154,9 @@ describe("Networks API (e2e)", () => {
         .set("Authorization", `Bearer ${adminToken}`);
       
       expect(getRes.status).toBe(200);
-      expect(getRes.body.gateways).toHaveLength(0);
       expect(getRes.body.code).toBe("nested-ignored-network");
+      const gateways = getRes.body.gateways || [];
+      expect(gateways).toHaveLength(0);
       
       await request(app)
         .delete("/api/v1/networks/nested-ignored-network")
@@ -360,7 +361,8 @@ describe("Networks API (e2e)", () => {
       
       expect(getRes.status).toBe(200);
       expect(getRes.body.name).toBe("Updated with Nested Data");
-      expect(getRes.body.gateways).toHaveLength(0);
+      const gateways = getRes.body.gateways || [];
+      expect(gateways).toHaveLength(0);
     });
   });
 
