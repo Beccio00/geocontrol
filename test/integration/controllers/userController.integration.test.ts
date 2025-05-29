@@ -30,4 +30,26 @@ describe("UserController integration", () => {
     });
     expect(result).not.toHaveProperty("password");
   });
+  it("get all Users: mapperService integration", async () => {
+    const fakeUsersDAO: UserDAO[] = [
+      { username: "testuser1", password: "secret", type: UserType.Operator },
+      { username: "testuser2", password: "pswd", type: UserType.Admin }
+    ];
+
+    const expectedDTOs = fakeUsersDAO.map(user => ({
+      username: user.username,
+      type: user.type
+    }));
+
+    (UserRepository as jest.Mock).mockImplementation(() => ({
+      getAllUsers: jest.fn().mockResolvedValue(fakeUsersDAO)
+    }));
+
+    const result = await userController.getAllUsers();
+
+    expect(result).toEqual(expectedDTOs);
+    result.forEach(user => {
+      expect(user).not.toHaveProperty("password");
+    });
+  });
 });
