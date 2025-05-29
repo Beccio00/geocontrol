@@ -196,7 +196,7 @@ export class MeasurementRepository{
       const realAndUniqueMacs = [...new Set(sensorMacs.filter(mac => sensorsSet.has(mac)))];
       return realAndUniqueMacs.map(mac => ({
         sensorMac: mac,
-        measurements: measurementsBySensor[mac] 
+        measurements: measurementsBySensor[mac]
       }));
     }
 
