@@ -16,7 +16,6 @@ describe("Gateway Routes Integration", () => {
   const token = "Bearer faketoken";
   const networkCode = "test-network";
   const gatewayMac = "AA:BB:CC:DD:EE:FF";
-  const secondGatewayMac = "11:22:33:44:55:66";
 
   afterEach(() => {
     jest.clearAllMocks();
