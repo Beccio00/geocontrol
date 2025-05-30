@@ -58,77 +58,7 @@
 | create gateway: conflict                           | GatewayRepository                 | Unit           | WB/statement coverage   |
 | ConflictError if new MAC address already exists    | GatewayRepository                 | Unit           | WB/statement coverage   |
 | get all gateways                                   | GatewayRepository                 | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist in getAllGateways | GatewayRepository          | Unit           | WB/statement coverage   |
-| get gateway: not found                             | GatewayRepository                 | Unit           | WB/statement coverage   |
-| update gateway                                     | GatewayRepository                 | Unit           | WB/statement coverage   |
-| update a gateway with partial fields              | GatewayRepository                 | Unit           | WB/statement coverage   |
-| update all fields of a gateway                    | GatewayRepository                 | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist when updating a gateway | GatewayRepository     | Unit           | WB/statement coverage   |
-| NotFoundError if gateway does not exist when updating | GatewayRepository           | Unit           | WB/statement coverage   |
-| delete gateway                                     | GatewayRepository                 | Unit           | WB/statement coverage   |
-| error deleting a non-existent gateway             | GatewayRepository                 | Unit           | WB/statement coverage   |
-| **Integration Tests (gatewayController.integration.test.ts)** |                                   |                |                         |
-| createGateway: should create a new gateway        | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| getAllGateways: should return all gateways in a network | GatewayController + Repository | Integration    | BB/equivalence partitioning |
-| getGateway: should return a specific gateway      | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| getGateway: should throw NotFoundError if gateway does not exist | GatewayController + Repository | Integration    | BB/equivalence partitioning |
-| updateGateway: should update a gateway            | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| deleteGateway: should delete a gateway            | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| **End-to-End Tests (gateways.e2e.test.ts)**        |                                   |                |                         |
-| create a gateway                                   | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 409 when creating a gateway with a duplicate macAddress | GatewayRoutes                | E2E            | BB/equivalence partitioning |
-| retrieve all gateways in a network                | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 404 for an invalid networkCode when retrieving gateways | GatewayRoutes                | E2E            | BB/equivalence partitioning |
-| retrieve a specific gateway                       | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 404 for a non-existent gateway                    | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| update a gateway                                   | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 404 when updating a non-existent gateway          | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| delete a gateway                                   | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| should return 404 when deleting a non-existent gateway | GatewayRoutes                | E2E            | BB/equivalence partitioning |
-| **Unit Tests (SensorRepository.db.test.ts)**       |                                   |                |                         |
-| create sensor                                      | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if the network does not exist       | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if the gateway does not exist       | SensorRepository                  | Unit           | WB/statement coverage   |
-| ConflictError if the sensor already exists        | SensorRepository                  | Unit           | WB/statement coverage   |
-| get all sensors                                   | SensorRepository                  | Unit           | WB/statement coverage   |
-| empty array if no sensors are found for a valid gateway | SensorRepository             | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist in getAllSensor | SensorRepository             | Unit           | WB/statement coverage   |
-| NotFoundError if gateway does not exist in getAllSensor | SensorRepository             | Unit           | WB/statement coverage   |
-| get sensor by MAC                                 | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if MAC does not exist               | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if sensorMac exists but is associated with a different gateway | SensorRepository | Unit           | WB/statement coverage   |
-| update sensor                                     | SensorRepository                  | Unit           | WB/statement coverage   |
-| update sensor with partial fields                | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist when updating a sensor | SensorRepository         | Unit           | WB/statement coverage   |
-| NotFoundError if gateway does not exist when updating a sensor | SensorRepository         | Unit           | WB/statement coverage   |
-| NotFoundError if sensor does not exist when updating | SensorRepository             | Unit           | WB/statement coverage   |
-| ConflictError if new MAC address already exists when updating | SensorRepository         | Unit           | WB/statement coverage   |
-| should retain all fields if no new fields are provided in updateSensor | SensorRepository     | Unit           | WB/statement coverage   |
-| delete sensor                                     | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError error deleting a non-existent sensor | SensorRepository               | Unit           | WB/statement coverage   |
-| NotFoundError if sensorMac exists but is associated with a different gateway | SensorRepository | Unit           | WB/statement coverage   |
-| **Integration Tests (sensorController.integration.test.ts)** |                                   |                |                         |
-| createSensor: should create a new sensor                    | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| ConflictError if sensor already exists                      | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| getAllSensor: should return all sensors in a gateway        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| getAllSensor: should return an empty array if no sensors exist | SensorController + Repository  | Integration    | BB/equivalence partitioning |
-| getSensorByMac: should return a specific sensor             | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| NotFoundError if sensor does not exist                      | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| updateSensor: should update a sensor                        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| NotFoundError if sensor does not exist when updating        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| deleteSensorByMac: should delete a sensor                   | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| NotFoundError if sensor does not exist when deleting        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| **End-to-End Tests (sensors.e2e.test.ts)**                  |                                   |                |                         |
-| create a sensor                                             | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 409 when creating a sensor with a duplicate macAddress      | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| retrieve all sensors in a gateway                          | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 404 for an invalid gatewayMac when retrieving sensors       | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| retrieve a specific sensor                                  | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 404 for a non-existent sensor                              | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| update a sensor                                             | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 404 when updating a non-existent sensor                    | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| delete a sensor                                             | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| should return 404 when deleting a non-existent sensor      | SensorRoutes                      | E2E            | BB/equivalence partitioning |
+
 
 # Coverage
 
