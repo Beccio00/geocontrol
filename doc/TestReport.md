@@ -38,9 +38,9 @@
   
   ### integration test
   ####  integration test controller
-  - Testano l'integrazione fra il controller layer, il service layer (mapper Dao Dto), il repository e il database vero e proprio,<br> infatti questi test sono eseguiti utilizzando un database di test e non un mock di esso
+  - Testano l'integrazione fra il controller layer, il mapping Dto/Dao, il repository e il database vero e proprio,<br> infatti questi test sono eseguiti utilizzando un database di test e non un mock di esso
   #### integration test routes
-  - Testano l'integrazione fra il layer route, authentication, controller e validation, <br> con alcuni test che chiamano in gioco anche il middleware di gestione errori. <br> Sono eseguiti usando jest e i mock , non ci sono vere interazioni col db, controller e servizio di autenticazione vengono simulati
+  - Testano l'integrazione fra il layer route, authentication, controller e validation, <br> con alcuni test che chiamano in gioco anche il middleware di gestione errori. <br> Sono eseguiti usando jest e i mock , non ci sono vere interazioni col db, controller e servizio di autenticazione, che vengono simulati
   ### e2e test
   - Test completo dell'intera applicazione compreso database e servizio http, <br> verifica il corretto funzionamento dell'applicazione compresa la generazione di token per l'autenticazione e lettura e scrittura da database. <br> Sempre eseguito per strati
 
@@ -53,11 +53,33 @@
 | Test case name                                      | Object(s) tested                  | Test level     | Technique used          |
 | :------------------------------------------------: | :-------------------------------: | :------------: | :---------------------: |
 | **Unit Tests (GatewayRepository.db.test.ts)**      |                                   |                |                         |
-| create gateway                                      | GatewayRepository                 | Unit           | WB/statement coverage   |
-| error create gateway if the network does not exist | GatewayRepository                 | Unit           | WB/statement coverage   |
-| create gateway: conflict                           | GatewayRepository                 | Unit           | WB/statement coverage   |
-| ConflictError if new MAC address already exists    | GatewayRepository                 | Unit           | WB/statement coverage   |
-| get all gateways                                   | GatewayRepository                 | Unit           | WB/statement coverage   |
+| Error handling (NotFound, Conflict)                | all repositories                  | Unit           | WB/statement coverage   |
+| Create/read/readAll/update/delete   (CRUD)         | all repositories                  | Unit           | WB/statement coverage   |
+| Validation logic                                   | all repositories                  | Unit           | WB/statement coverage   |
+| **Unit Tests - Service Layer**                     |                |
+| Measurement service calculations                   | measurementService                | Unit           | BB/equivalence partitioning   |
+| Authentication service logic                       | authService                       | Unit           | BB/equivalence partitioning  |
+| **Integration Tests - Controller Layer**           |                                   |                |                           |
+| Network controller integration                     | networkController + repository    | Integration    | BB/equivalence partitioning |
+| Gateway controller integration                     | gatewayController + repository    | Integration    | BB/equivalence partitioning |
+| Sensor controller integration                      | sensorController + repository     | Integration    | BB/equivalence partitioning |
+| User controller integration                        | userController + repository       | Integration    | BB/equivalence partitioning |
+| **Integration Tests - Routes Layer**               |                  |
+| Authentication & authorization flow                | routes + authService + middleware | Integration    | BB/equivalence partitioning |
+| Input validation & error handling                  | routes + validationMiddleware     | Integration    | BB/boundary values      |
+| Network routes (CRUD + permissions)                | NetworkRoutes + Controller        | Integration    | BB/equivalence partitioning |
+| Gateway routes (CRUD + permissions)                | GatewayRoutes + Controller        | Integration    | BB/equivalence partitioning |
+| Sensor routes (CRUD + permissions)                 | SensorRoutes + Controller         | Integration    | BB/equivalence partitioning |
+| User routes (CRUD + permissions)                   | UserRoutes + Controller           | Integration    | BB/equivalence partitioning |
+| **E2E Tests - Complete System**                    |                                   |                |                         |
+| Authentication workflows (login, token validation) | complete Auth System              | e2e            | BB/equivalence partitioning |
+| User management workflows                          | user API + database               | e2e            | BB/equivalence partitioning |
+| Network management workflows                       | network API + database            | e2e            | BB/equivalence partitioning |
+| Gateway management workflows                       | gateway API + database            | e2e            | BB/equivalence partitioning |
+| Sensor management workflows                        | sensor API + database             | e2e            | BB/equivalence partitioning |
+| Measurement workflows                              | measurement API + database        | e2e            | BB/equivalence partitioning |
+| Error scenarios (404, 409, 403, 401)               | complete system                   | e2e            | BB/error conditions     |
+| Data persistence & relationships                   | database + API                    | e2e            | BB/equivalence partitioning |
 
 
 # Coverage
