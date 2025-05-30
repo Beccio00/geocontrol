@@ -23,8 +23,7 @@ export function validateDateRangeMiddleware(
 
     if (start > end) {
       const error = createAppError({
-        code: 500,
-        message: "Invalid date range: endDate must be greater than startDate",
+        code: 500
       });
 
       return next(error);

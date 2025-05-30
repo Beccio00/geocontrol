@@ -2,34 +2,6 @@ import request from "supertest";
 import { app } from "@app";
 import { generateToken } from "@services/authService";
 import { beforeAllE2e, afterAllE2e, TEST_USERS } from "@test/e2e/lifecycle";
-
-describe("GET /users (e2e)", () => {
-  let token: string;
-
-  beforeAll(async () => {
-    await beforeAllE2e();
-    token = generateToken(TEST_USERS.admin);
-  });
-
-  afterAll(async () => {
-    await afterAllE2e();
-  });
-
-  it("get all users", async () => {
-    const res = await request(app)
-      .get("/api/v1/users")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body.length).toBe(3);
-
-    const usernames = res.body.map((u: any) => u.username).sort();
-    const types = res.body.map((u: any) => u.type).sort();
-
-    expect(usernames).toEqual(["admin", "operator", "viewer"]);
-    expect(types).toEqual(["admin", "operator", "viewer"]);
-  });
-});
 describe("POST /users (e2e)", () => {
   let token: string;
 
@@ -80,37 +52,6 @@ describe("POST /users (e2e)", () => {
     expect(res.status).toBe(409);   
   }); 
 });
-describe("GET /users/{userName} (e2e)", () => {
-  let token: string;
-  
-  beforeAll(async () => {
-    await beforeAllE2e();
-    token = generateToken(TEST_USERS.admin);
-  });
-
-  afterAll(async () => {
-    await afterAllE2e();
-  });
-
-  it("get user by userName", async () => {
-    let userName: string = "admin";
-    const res = await request(app)
-      .get(`/api/v1/users/${userName}`)
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body.username).toBe("admin");
-    expect(res.body.type).toBe("admin");
-  });
-  it("get user by userName: NotFoundError", async () => {
-    let userName: string = "ghost";
-    const res = await request(app)
-      .get(`/api/v1/users/${userName}`)
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(res.status).toBe(404);
-  });
-});
 describe("DELETE /users/{userName} (e2e)", () => {
   let token: string;
 
@@ -146,3 +87,89 @@ describe("DELETE /users/{userName} (e2e)", () => {
     expect(res.status).toBe(404);
   });
 });
+describe("GET /users (e2e)", () => {
+  let token: string;
+
+  beforeAll(async () => {
+    await beforeAllE2e();
+    token = generateToken(TEST_USERS.admin);
+  });
+
+  afterAll(async () => {
+    await afterAllE2e();
+  });
+
+  it("get all users", async () => {
+    const res = await request(app)
+      .get("/api/v1/users")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(3);
+
+    const usernames = res.body.map((u: any) => u.username).sort();
+    const types = res.body.map((u: any) => u.type).sort();
+
+    expect(usernames).toEqual(["admin", "operator", "viewer"]);
+    expect(types).toEqual(["admin", "operator", "viewer"]);
+  });
+  it("get all users. deleted user after authenitcation", async () => {
+    await request(app)
+      .delete(`/api/v1/users/admin`)
+      .set("Authorization", `Bearer ${token}`);
+    const res = await request(app)
+      .get("/api/v1/users")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(401);
+  });
+  it("get all users: fake token provided", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/users")
+      .set("Authorization", `Bearer abshdiedaposkdoamdp`);
+
+    expect(res.status).toBe(401);
+  });
+  it("get all users: invalid token format provided", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/users")
+      .set("Authorization", 'Bearer iNVALID toKEN FORMAT');
+
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("GET /users/{userName} (e2e)", () => {
+  let token: string;
+  
+  beforeAll(async () => {
+    await beforeAllE2e();
+    token = generateToken(TEST_USERS.admin);
+  });
+
+  afterAll(async () => {
+    await afterAllE2e();
+  });
+
+  it("get user by userName", async () => {
+    let userName: string = "admin";
+    const res = await request(app)
+      .get(`/api/v1/users/${userName}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.username).toBe("admin");
+    expect(res.body.type).toBe("admin");
+  });
+  it("get user by userName: NotFoundError", async () => {
+    let userName: string = "ghost";
+    const res = await request(app)
+      .get(`/api/v1/users/${userName}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(404);
+  });
+});
+
