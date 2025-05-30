@@ -1,6 +1,5 @@
 # Test Report
 
-<The goal of this document is to explain how the application was tested, detailing how the test cases were defined and what they cover>
 
 # Contents
 
@@ -173,6 +172,6 @@
 
 ## Coverage white box
 
-La copertura risultante è quasi completa, la statement coverage è sempre sopra l'80% e spesso totale, si può notar eun calo di copertura nel file utils.ts perchè non è stata testata un parte di una funzione perchè non è stata usata nel codice.
+La copertura risultante è quasi completa, la statement coverage è sempre sopra l'80% e spesso totale, si può notare un calo di copertura nel file utils.ts nel quale non è stata testata un porzione di una funzione, perché non è stata usata nel codice.
 
 ![coverage value](./images/test-report.jpg)
