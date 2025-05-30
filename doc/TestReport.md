@@ -27,59 +27,55 @@
 # Integration approach
 
   In generale l'approccio utilizzato è stato quello bottom up, considerando in maniera indipendente la logica per i sensori, gateway, network, misure,autenticazione e utenti. <br>
-  Essendo la gestione delle misure non parallelizzabile come la gestione di network, gateway e sensori l'approccio è variato leggermente, sono ifatti stati inclusi a unit test per testare il servizio measurament
+  Essendo la gestione delle misure non parallelizzabile come la gestione di network, gateway e sensori l'approccio è variato leggermente; abbiamo infatti dovuto includere test per branch coverage
 
   ### unit test 
   
   #### unit test repository
-   Utilizzando jest ed i mock è testata la logica vera e propria delle funzioni, approcio white box
+  - Utilizzando jest ed utilizzando mock per le dipendenze esterne è testata la logica vera e propria delle funzioni con approccio white box. <br> Il measurementRepository essendo più complicato è stato testato in modo più approfondito facnedo uso anche di branch coverage <br> per testare le logiche di funzionamento delle date, ad esempio
   #### unit test mesurement service
-  - Essendo la logica di questo servizio una parte importante della logica dell'applicazione <br> sono stati eseguiti degli unit test mirati a questo servizio
+  - Essendo la logica di questo servizio una parte importante della logica dell'applicazione sono stati eseguiti degli unit test mirati a questo servizio. <br> Utilizzano mock per tutte le dipendenze e verificano con approccio black box/misto gli algoritmi di calcolo statistico
   
   ### integration test
   ####  integration test controller
-  - Testano l'integrazione fra il controller layer, il mapping Dto/Dao, il repository e il database vero e proprio,<br> infatti questi test sono eseguiti utilizzando un database di test e non un mock di esso
+  - Testano l'integrazione fra il controller layer, il mapping service Dto/Dao, il repository e un database (di test) vero e proprio. <br> Testano relazioni tra entità, vincoli di database e propagazione degli errori dal repository al controller
   #### integration test routes
-  - Testano l'integrazione fra il layer route, authentication, controller e validation, <br> con alcuni test che chiamano in gioco anche il middleware di gestione errori. <br> Sono eseguiti usando jest e i mock , non ci sono vere interazioni col db, controller e servizio di autenticazione, che vengono simulati
+  - Testano l'integrazione fra routes, middleware di autenticazione, validazione e di gestione errori. <br> Sono eseguiti usando jest e i mock, non ci sono vere interazioni col db, controller e servizio di autenticazione vengono simulati. <br> Verificano inoltre il parsing delle richeiste HTTP e la formattazione delle risposte agli errori
   ### e2e test
-  - Test completo dell'intera applicazione compreso database e servizio http, <br> verifica il corretto funzionamento dell'applicazione compresa la generazione di token per l'autenticazione e lettura e scrittura da database. <br> Sempre eseguito per strati
+  - Test completo dell'intera applicazione compreso database e servizio http, nessun componente è simulato, si testa la compelta integrazione di tutti i layer. <br> Validano l'applicazione partendo dalla richiesta HTTP con generazione di token reali (e quindi la catena di autenticazione e autorizzazione) <br> fino ad arrivare, attraversando tutti gli strati dell'applicazione, alla scrittura e lettura da database
+  
 
     
 
 # Tests
 
-<in the table below list the test cases defined For each test report the object tested, the test level (API, integration, unit) and the technique used to define the test case (BB/ eq partitioning, BB/ boundary, WB/ statement coverage, etc)> <split the table if needed>
-
 | Test case name                                      | Object(s) tested                  | Test level     | Technique used          |
 | :------------------------------------------------: | :-------------------------------: | :------------: | :---------------------: |
-| **Unit Tests (GatewayRepository.db.test.ts)**      |                                   |                |                         |
+| **Unit Tests - Repositories**      |                                   |                |                         |
 | Error handling (NotFound, Conflict)                | all repositories                  | Unit           | WB/statement coverage   |
 | Create/read/readAll/update/delete   (CRUD)         | all repositories                  | Unit           | WB/statement coverage   |
 | Validation logic                                   | all repositories                  | Unit           | WB/statement coverage   |
-| **Unit Tests - Service Layer**                     |                |
-| Measurement service calculations                   | measurementService                | Unit           | BB/equivalence partitioning   |
-| Authentication service logic                       | authService                       | Unit           | BB/equivalence partitioning  |
+| Complex query logic (dates, hierarchies)           | measurement repositoy  | Unit           | WB/branch coverage/statement coverage  |
+| **Unit Tests - Service Layer (measurements, auth)**                     |                |
+| Measurement statistical calculations               | measurementService            | Unit         | BB/equivalence partitioning |
+| Edge cases and measurement processing workflows    | measurementService              | Unit         | BB/boundary values      |
 | **Integration Tests - Controller Layer**           |                                   |                |                           |
-| Network controller integration                     | networkController + repository    | Integration    | BB/equivalence partitioning |
-| Gateway controller integration                     | gatewayController + repository    | Integration    | BB/equivalence partitioning |
-| Sensor controller integration                      | sensorController + repository     | Integration    | BB/equivalence partitioning |
-| User controller integration                        | userController + repository       | Integration    | BB/equivalence partitioning |
+| Network/gateway/sensor controller integration    | network/gateway/sensorController + repository + DB   | Integration    | BB/equivalence partitioning |
+| User controller integration                        | userController + repository         | Integration    | BB/equivalence partitioning |
+| Measurement controller integration                 | measureController + repository + DB | Integration    | BB/equivalence partitioning |
 | **Integration Tests - Routes Layer**               |                  |
-| Authentication & authorization flow                | routes + authService + middleware | Integration    | BB/equivalence partitioning |
-| Input validation & error handling                  | routes + validationMiddleware     | Integration    | BB/boundary values      |
-| Network routes (CRUD + permissions)                | NetworkRoutes + Controller        | Integration    | BB/equivalence partitioning |
-| Gateway routes (CRUD + permissions)                | GatewayRoutes + Controller        | Integration    | BB/equivalence partitioning |
-| Sensor routes (CRUD + permissions)                 | SensorRoutes + Controller         | Integration    | BB/equivalence partitioning |
-| User routes (CRUD + permissions)                   | UserRoutes + Controller           | Integration    | BB/equivalence partitioning |
+| HTTP middleware chain integration                  | Routes + middleware (mocked controller) | Integration    | BB/equivalence partitioning |
+| Authentication & authorization flow                | Routes + mocked auth service      | Integration    | BB/equivalence partitioning |
+| Request validation & error formatting              | Routes + validation middleware    | Integration    | BB/boundary values      |
+| CRUD operations                                    | Routes  (mocked controller)  | Integration    | BB/equivalence partitioning |
 | **E2E Tests - Complete System**                    |                                   |                |                         |
 | Authentication workflows (login, token validation) | complete Auth System              | e2e            | BB/equivalence partitioning |
+| Authorization matrix (Admin/Operator/Viewer)       | Complete auth + all endpoints + Users   | E2E     | BB/equivalence partitioning |
 | User management workflows                          | user API + database               | e2e            | BB/equivalence partitioning |
-| Network management workflows                       | network API + database            | e2e            | BB/equivalence partitioning |
-| Gateway management workflows                       | gateway API + database            | e2e            | BB/equivalence partitioning |
-| Sensor management workflows                        | sensor API + database             | e2e            | BB/equivalence partitioning |
-| Measurement workflows                              | measurement API + database        | e2e            | BB/equivalence partitioning |
-| Error scenarios (404, 409, 403, 401)               | complete system                   | e2e            | BB/error conditions     |
-| Data persistence & relationships                   | database + API                    | e2e            | BB/equivalence partitioning |
+| Network, gateway, sensor management workflows      | network/gateway/sensor API + database | e2e            | BB/equivalence partitioning |
+| Measurement complex workflows                      | measurement system + database | e2e            | BB/equivalence partitioning |
+| Error scenarios (404, 409...) e edge cases         | complete system                   | e2e            | BB/error conditions     |
+| Data persistence & entity relationships            | database + API                    | e2e            | BB/boundary values |
 
 
 # Coverage
