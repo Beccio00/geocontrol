@@ -84,39 +84,41 @@
 
 <Report in the following table the coverage of functional requirements and scenarios(from official requirements) >
 
-| Functional Requirement or scenario | Test(s)                                                                 |
-| :--------------------------------: | :---------------------------------------------------------------------: |
-|                FR1.1               |  authentication 3 user types, token generation, wrong username o password  |
-|                FR2.1               | get all users, wrong token, unauthorized, insufficient rights    |
-|                FR2.2               | create user, vari tipi, conflict error, unauthorized, insufficient rights, conflict error   |
-|                FR2.3               | get user, not found, unauthorized, insufficient rights                  |
-|                FR2.4               | delete user, not found, unauthorized, insufficient rights            |
+| Functional Requirement or scenario | Test(s)                                                                 | num      |
+| :--------------------------------: | :---------------------------------------------------------------------: | :------: |
+|                FR1.1               |  authentication 3 user types, token generation, wrong username o password  | 5 + n (tested indirectly in other e2e) 
+|                FR2.1               | get all users, wrong token, unauthorized, insufficient rights    | 10 |
+|                FR2.2               | create user, vari tipi, conflict error, unauthorized, insufficient rights, conflict error   | 9 |
+|                FR2.3               | get user, not found, unauthorized, insufficient rights                  | 10 |
+|                FR2.4               | delete user, not found, unauthorized, insufficient rights            | 9 |
 | | |
-|                FR3.1               | get all networks, insufficient rights, unauthorized |
-|                FR3.2               | create network, insufficient rights, unauthorized, duplicated code, input validation, ignore nested gateways |
-|                FR3.3               | get network, insufficient rights, unauthorized, non existing network (not found) |
-|                FR3.4               | update network, insufficient rights, unauthorized, not found, iput validation, code already exists, ignore gateways|
-|                FR3.5               | delete network, insufficient rights, unauthorized, not found |
+|                FR3.1               | get all networks, insufficient rights, unauthorized | 10 |
+|                FR3.2               | create network, insufficient rights, unauthorized, duplicated code, input validation, ignore nested gateways | 21 |
+|                FR3.3               | get network, insufficient rights, unauthorized, non existing network (not found) | 12 |
+|                FR3.4               | update network, insufficient rights, unauthorized, not found, iput validation, code already exists, ignore gateways| 22 |
+|                FR3.5               | delete network, insufficient rights, unauthorized, not found | 14 |
 | | |
-|                FR4.1               | get all gateways in a network,  insufficient rights, unauthorized, invalid network |
-|                FR4.2               | create gateway, insufficient rights, unauthorized, duplicated mac, input validation, ignore nested sensors, invalid network |
-|                FR4.3               | get gateway, insufficient rights, unauthorized, not found, invalid network |
-|                FR4.4               | update gateway, insufficient rights, unauthorized, not found, input validation, code already exists, ignore sensors|
-|                FR4.5               | delete gateway, insufficient rights, unauthorized, not found, invalid network |
+|                FR4.1               | get all gateways in a network,  insufficient rights, unauthorized, invalid network | 8 |
+|                FR4.2               | create gateway, insufficient rights, unauthorized, duplicated mac, input validation, ignore nested sensors, invalid network | 14 |
+|                FR4.3               | get gateway, insufficient rights, unauthorized, not found, invalid network | 8 |
+|                FR4.4               | update gateway, insufficient rights, unauthorized, not found, input validation, code already exists, ignore sensors| 16 |
+|                FR4.5               | delete gateway, insufficient rights, unauthorized, not found, invalid network | 10 |
 | | |
-|                FR5.1               | get all sensors in a gateway, insufficient rights, unauthorized, invalid network/gateway |
-|                FR5.2               | create sensor, insufficient rights, unauthorized, duplicated mac, input validation, invalid network/gateway |
-|                FR5.3               | get sensor, insufficient rights, unauthorized, not found, invalid network/gateway   |
-|                FR5.4               | update a sensor, insufficient rights, unauthorized, not found, input validation, code already exists |
-|                FR5.5               | delete a sensor, insufficient rights, unauthorized, not found, invalid network/gateway |
+|                FR5.1               | get all sensors in a gateway, insufficient rights, unauthorized, invalid network/gateway | 12 |
+|                FR5.2               | create sensor, insufficient rights, unauthorized, duplicated mac, input validation, invalid network/gateway | 16 |
+|                FR5.3               | get sensor, insufficient rights, unauthorized, not found, invalid network/gateway   | 10 |
+|                FR5.4               | update a sensor, insufficient rights, unauthorized, not found, input validation, code already exists | 18 |
+|                FR5.5               | delete a sensor, insufficient rights, unauthorized, not found, invalid network/gateway | 13 |
 | | |
-|                FR6.1               |                                                                         |
-|                FR6.2               |                                                                         |
-|                FR6.3               |                                                                         |
-|                FR6.4               |                                                                         |
-|                FR6.5               |                                                                         |
-|                FR6.6               |                                                                         |
-|                FR6.7               |                                                                         |
+|                FR6.1               | get measurements by network, insufficient rights, unauthorized, invalid network, date filtering, sensor filtering| 17 |
+|                FR6.2               | get statistics (by network), insufficient rights, unauthorized, invalid network, stats calculation |  7  |
+|                FR6.3               | get network outliers, insufficient rights, unauthorized, invalid network, date filtering, sensor filtering, outlier detection |  5 |
+|                FR6.4               | store measurements, input validation, batch storage  | 7 |
+|                FR6.5               | get measurements by sensor, invalid sensor, date filtering, empty sensor, edge cases                       | 15 |
+|                FR6.6               | get sensor statistics,  date filtering, statistical calculations, no measurements  | 7 |
+|                FR6.7               | get sensor outliers, date filtering, outlier detection, no measurements | 6 |
+
+I test che rimangono fuori (ca. 12) riguardano l'infrastruttura del progetto, il setup o funzioni helper. Questi contrubuiscono solo indirettamente al testing dei requisiti funzionali. <br> Alcuni fra i test poi, sopratutto e2e, possono coprire più requisiti funzionali assieme, e quindi non è sempre possibile dividerli precisamente come appartenenti ad un singolo caso
 
 ## Coverage white box
 
