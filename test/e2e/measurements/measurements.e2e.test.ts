@@ -14,7 +14,7 @@ describe("Measurements API (e2e)", () => {
 
     const startDate : string = "2025-01-18T16:10:00+01:00";
     const endDate : string = "2025-01-18T16:50:00+01:00";
-    const errorEndDate : string = "2025-01-18T15:00:00+01:00";
+    const lowerEndDate : string = "2025-01-18T15:00:00+01:00";
 
     const measurements = [
         {
@@ -355,9 +355,27 @@ describe("Measurements API (e2e)", () => {
             const res = await request(app)
             .get(`/api/v1/networks/${networkCode}/measurements`)
             .set("Authorization", `Bearer ${token}`)
-            .query({ startDate, endDate : errorEndDate});
+            .query({ startDate, endDate : lowerEndDate});
 
-            expect(res.status).toBe(500);
+            expect(res.status).toBe(200);
+
+            expect(Array.isArray(res.body)).toBe(true);
+            expect(res.body).toHaveLength(2);
+            const s1 = res.body[1];
+
+            expect(s1).toHaveProperty("sensorMacAddress");
+            expect(typeof s1.sensorMacAddress).toBe("string");
+
+            expect(s1).not.toHaveProperty("stats");
+            expect(s1).not.toHaveProperty("measurements");
+
+            const s2 = res.body[1];
+
+            expect(s2).toHaveProperty("sensorMacAddress");
+            expect(typeof s2.sensorMacAddress).toBe("string");
+
+            expect(s2).not.toHaveProperty("stats");
+            expect(s2).not.toHaveProperty("measurements");
         })
         it("get network measurements with multiple existing sensorMACs", async() =>{
             const res = await request(app)
@@ -667,9 +685,14 @@ describe("Measurements API (e2e)", () => {
             const res = await request(app)
             .get(`/api/v1/networks/${networkCode}/gateways/${gatewayMac}/sensors/${sensorMac1}/measurements`)
             .set("Authorization", `Bearer ${token}`)
-            .query({ startDate, endDate : errorEndDate});
+            .query({ startDate, endDate : lowerEndDate});
 
-            expect(res.status).toBe(500);
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty("sensorMacAddress");
+            expect(typeof res.body.sensorMacAddress).toBe("string");
+
+            expect(res.body).not.toHaveProperty("stats");
+            expect(res.body).not.toHaveProperty("measurements");
         })
         it("get sensor with no measurements", async() =>{
             const res = await request(app)
