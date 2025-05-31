@@ -1,6 +1,5 @@
 # Test Report
 
-<The goal of this document is to explain how the application was tested, detailing how the test cases were defined and what they cover>
 
 # Contents
 
@@ -8,6 +7,13 @@
 - [Contents](#contents)
 - [Dependency graph](#dependency-graph)
 - [Integration approach](#integration-approach)
+    - [unit test](#unit-test)
+      - [unit test repository](#unit-test-repository)
+      - [unit test mesurement service](#unit-test-mesurement-service)
+    - [integration test](#integration-test)
+      - [integration test controller](#integration-test-controller)
+      - [integration test routes](#integration-test-routes)
+    - [e2e test](#e2e-test)
 - [Tests](#tests)
 - [Coverage](#coverage)
   - [Coverage of FR](#coverage-of-fr)
@@ -20,105 +26,57 @@
 
 # Integration approach
 
-  L'approccio utilizzato è bottom up guardando in maniera indipendente la logica per i sensori, gateway, network, misure,autenticazione e utenti. 
+  In generale l'approccio utilizzato è stato quello bottom up, considerando in maniera indipendente la logica per i sensori, gateway, network, misure,autenticazione e utenti. <br>
+  Essendo la gestione delle misure non parallelizzabile come la gestione di network, gateway e sensori l'approccio è variato leggermente; abbiamo infatti dovuto includere test per branch coverage
+
+  ### unit test 
   
-  Quindi per ogniuno di essi abbiamo seguito il seguente approccio: 
+  #### unit test repository
+  - Utilizzando jest ed utilizzando mock per le dipendenze esterne è testata la logica vera e propria delle funzioni con approccio white box. <br> Il measurementRepository essendo più complicato è stato testato in modo più approfondito facnedo uso anche di branch coverage <br> per testare le logiche di funzionamento delle date, ad esempio
+  #### unit test mesurement service
+  - Essendo la logica di questo servizio una parte importante della logica dell'applicazione sono stati eseguiti degli unit test mirati a questo servizio. <br> Utilizzano mock per tutte le dipendenze e verificano con approccio black box/misto gli algoritmi di calcolo statistico
+  
+  ### integration test
+  ####  integration test controller
+  - Testano l'integrazione fra il controller layer, il mapping service Dto/Dao, il repository e un database (di test) vero e proprio. <br> Testano relazioni tra entità, vincoli di database e propagazione degli errori dal repository al controller
+  #### integration test routes
+  - Testano l'integrazione fra routes, middleware di autenticazione, validazione e di gestione errori. <br> Sono eseguiti usando jest e i mock, non ci sono vere interazioni col db, controller e servizio di autenticazione vengono simulati. <br> Verificano inoltre il parsing delle richeiste HTTP e la formattazione delle risposte agli errori
+  ### e2e test
+  - Test completo dell'intera applicazione compreso database e servizio http, nessun componente è simulato, si testa la completa integrazione di tutti i layer. <br> Validano l'applicazione partendo dalla richiesta HTTP con generazione di token reali (e quindi la catena di autenticazione e autorizzazione) <br> fino ad arrivare, attraversando tutti gli strati dell'applicazione, alla scrittura e lettura da database
+  
 
-  step 1: unit test del repository
-  step 2: integration test repository e controller
-  step 3: e2e test
-
-    <Write here the integration sequence you adopted, in general terms (top down, bottom up, mixed) and as sequence
-
-    (ex: step1: unit A, step 2: unit A+B, step 3: unit A+B+C, etc)>
-
-    <Some steps may  correspond to unit testing (ex step1 in ex above)>
-
-    <One step will  correspond to API testing, or testing unit route.js>
+    
 
 # Tests
 
-<in the table below list the test cases defined For each test report the object tested, the test level (API, integration, unit) and the technique used to define the test case (BB/ eq partitioning, BB/ boundary, WB/ statement coverage, etc)> <split the table if needed>
-
 | Test case name                                      | Object(s) tested                  | Test level     | Technique used          |
 | :------------------------------------------------: | :-------------------------------: | :------------: | :---------------------: |
-| **Unit Tests (GatewayRepository.db.test.ts)**      |                                   |                |                         |
-| create gateway                                      | GatewayRepository                 | Unit           | WB/statement coverage   |
-| error create gateway if the network does not exist | GatewayRepository                 | Unit           | WB/statement coverage   |
-| create gateway: conflict                           | GatewayRepository                 | Unit           | WB/statement coverage   |
-| ConflictError if new MAC address already exists    | GatewayRepository                 | Unit           | WB/statement coverage   |
-| get all gateways                                   | GatewayRepository                 | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist in getAllGateways | GatewayRepository          | Unit           | WB/statement coverage   |
-| get gateway: not found                             | GatewayRepository                 | Unit           | WB/statement coverage   |
-| update gateway                                     | GatewayRepository                 | Unit           | WB/statement coverage   |
-| update a gateway with partial fields              | GatewayRepository                 | Unit           | WB/statement coverage   |
-| update all fields of a gateway                    | GatewayRepository                 | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist when updating a gateway | GatewayRepository     | Unit           | WB/statement coverage   |
-| NotFoundError if gateway does not exist when updating | GatewayRepository           | Unit           | WB/statement coverage   |
-| delete gateway                                     | GatewayRepository                 | Unit           | WB/statement coverage   |
-| error deleting a non-existent gateway             | GatewayRepository                 | Unit           | WB/statement coverage   |
-| **Integration Tests (gatewayController.integration.test.ts)** |                                   |                |                         |
-| createGateway: should create a new gateway        | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| getAllGateways: should return all gateways in a network | GatewayController + Repository | Integration    | BB/equivalence partitioning |
-| getGateway: should return a specific gateway      | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| getGateway: should throw NotFoundError if gateway does not exist | GatewayController + Repository | Integration    | BB/equivalence partitioning |
-| updateGateway: should update a gateway            | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| deleteGateway: should delete a gateway            | GatewayController + Repository    | Integration    | BB/equivalence partitioning |
-| **End-to-End Tests (gateways.e2e.test.ts)**        |                                   |                |                         |
-| create a gateway                                   | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 409 when creating a gateway with a duplicate macAddress | GatewayRoutes                | E2E            | BB/equivalence partitioning |
-| retrieve all gateways in a network                | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 404 for an invalid networkCode when retrieving gateways | GatewayRoutes                | E2E            | BB/equivalence partitioning |
-| retrieve a specific gateway                       | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 404 for a non-existent gateway                    | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| update a gateway                                   | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| 404 when updating a non-existent gateway          | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| delete a gateway                                   | GatewayRoutes                     | E2E            | BB/equivalence partitioning |
-| should return 404 when deleting a non-existent gateway | GatewayRoutes                | E2E            | BB/equivalence partitioning |
-| **Unit Tests (SensorRepository.db.test.ts)**       |                                   |                |                         |
-| create sensor                                      | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if the network does not exist       | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if the gateway does not exist       | SensorRepository                  | Unit           | WB/statement coverage   |
-| ConflictError if the sensor already exists        | SensorRepository                  | Unit           | WB/statement coverage   |
-| get all sensors                                   | SensorRepository                  | Unit           | WB/statement coverage   |
-| empty array if no sensors are found for a valid gateway | SensorRepository             | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist in getAllSensor | SensorRepository             | Unit           | WB/statement coverage   |
-| NotFoundError if gateway does not exist in getAllSensor | SensorRepository             | Unit           | WB/statement coverage   |
-| get sensor by MAC                                 | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if MAC does not exist               | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if sensorMac exists but is associated with a different gateway | SensorRepository | Unit           | WB/statement coverage   |
-| update sensor                                     | SensorRepository                  | Unit           | WB/statement coverage   |
-| update sensor with partial fields                | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError if network does not exist when updating a sensor | SensorRepository         | Unit           | WB/statement coverage   |
-| NotFoundError if gateway does not exist when updating a sensor | SensorRepository         | Unit           | WB/statement coverage   |
-| NotFoundError if sensor does not exist when updating | SensorRepository             | Unit           | WB/statement coverage   |
-| ConflictError if new MAC address already exists when updating | SensorRepository         | Unit           | WB/statement coverage   |
-| should retain all fields if no new fields are provided in updateSensor | SensorRepository     | Unit           | WB/statement coverage   |
-| delete sensor                                     | SensorRepository                  | Unit           | WB/statement coverage   |
-| NotFoundError error deleting a non-existent sensor | SensorRepository               | Unit           | WB/statement coverage   |
-| NotFoundError if sensorMac exists but is associated with a different gateway | SensorRepository | Unit           | WB/statement coverage   |
-| **Integration Tests (sensorController.integration.test.ts)** |                                   |                |                         |
-| createSensor: should create a new sensor                    | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| ConflictError if sensor already exists                      | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| getAllSensor: should return all sensors in a gateway        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| getAllSensor: should return an empty array if no sensors exist | SensorController + Repository  | Integration    | BB/equivalence partitioning |
-| getSensorByMac: should return a specific sensor             | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| NotFoundError if sensor does not exist                      | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| updateSensor: should update a sensor                        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| NotFoundError if sensor does not exist when updating        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| deleteSensorByMac: should delete a sensor                   | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| NotFoundError if sensor does not exist when deleting        | SensorController + Repository     | Integration    | BB/equivalence partitioning |
-| **End-to-End Tests (sensors.e2e.test.ts)**                  |                                   |                |                         |
-| create a sensor                                             | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 409 when creating a sensor with a duplicate macAddress      | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| retrieve all sensors in a gateway                          | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 404 for an invalid gatewayMac when retrieving sensors       | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| retrieve a specific sensor                                  | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 404 for a non-existent sensor                              | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| update a sensor                                             | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| 404 when updating a non-existent sensor                    | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| delete a sensor                                             | SensorRoutes                      | E2E            | BB/equivalence partitioning |
-| should return 404 when deleting a non-existent sensor      | SensorRoutes                      | E2E            | BB/equivalence partitioning |
+| **Unit Tests - Repositories**      |                                   |                |                         |
+| Error handling (NotFound, Conflict)                | all repositories                  | Unit           | WB/statement coverage   |
+| Create/read/readAll/update/delete   (CRUD)         | all repositories                  | Unit           | WB/statement coverage   |
+| Validation logic                                   | all repositories                  | Unit           | WB/statement coverage   |
+| Complex query logic (dates, hierarchies)           | measurement repositoy  | Unit           | WB/branch coverage/statement coverage  |
+| **Unit Tests - Service Layer (measurements, auth)**                     |                |
+| Measurement statistical calculations               | measurementService            | Unit         | BB/equivalence partitioning |
+| Edge cases and measurement processing workflows    | measurementService              | Unit         | BB/boundary values      |
+| **Integration Tests - Controller Layer**           |                                   |                |                           |
+| Network/gateway/sensor controller integration    | network/gateway/sensorController + repository + DB   | Integration    | BB/equivalence partitioning |
+| User controller integration                        | userController + repository         | Integration    | BB/equivalence partitioning |
+| Measurement controller integration                 | measureController + repository + DB | Integration    | BB/equivalence partitioning |
+| **Integration Tests - Routes Layer**               |                  |
+| HTTP middleware chain integration                  | Routes + middleware (mocked controller) | Integration    | BB/equivalence partitioning |
+| Authentication & authorization flow                | Routes + mocked auth service      | Integration    | BB/equivalence partitioning |
+| Request validation & error formatting              | Routes + validation middleware    | Integration    | BB/boundary values      |
+| CRUD operations                                    | Routes  (mocked controller)  | Integration    | BB/equivalence partitioning |
+| **E2E Tests - Complete System**                    |                                   |                |                         |
+| Authentication workflows (login, token validation) | complete Auth System              | e2e            | BB/equivalence partitioning |
+| Authorization matrix (Admin/Operator/Viewer)       | Complete auth + all endpoints + Users   | E2E     | BB/equivalence partitioning |
+| User management workflows                          | user API + database               | e2e            | BB/equivalence partitioning |
+| Network, gateway, sensor management workflows      | network/gateway/sensor API + database | e2e            | BB/equivalence partitioning |
+| Measurement complex workflows                      | measurement system + database | e2e            | BB/equivalence partitioning |
+| Error scenarios (404, 409...) e edge cases         | complete system                   | e2e            | BB/error conditions     |
+| Data persistence & entity relationships            | database + API                    | e2e            | BB/boundary values |
+
 
 # Coverage
 
@@ -126,36 +84,44 @@
 
 <Report in the following table the coverage of functional requirements and scenarios(from official requirements) >
 
-| Functional Requirement or scenario | Test(s)                                                                 |
-| :--------------------------------: | :---------------------------------------------------------------------: |
-|                FR1.1               |                                                                         |
-|                FR2.1               |                                                                         |
-|                FR2.2               |                                                                         |
-|                FR2.3               |                                                                         |
-|                FR2.4               |                                                                         |
-|                FR3.1               |                                                                         |
-|                FR3.2               |                                                                         |
-|                FR3.3               |                                                                         |
-|                FR3.4               |                                                                         |
-|                FR3.5               |                                                                         |
-|                FR4.1               | retrieve all gateways in a network, 404 for an invalid networkCode when retrieving gateways |
-|                FR4.2               | create a gateway, 409 when creating a gateway with a duplicate macAddress |
-|                FR4.3               | retrieve a specific gateway, 404 for a non-existent gateway            |
-|                FR4.4               | update a gateway, 404 when updating a non-existent gateway             |
-|                FR4.5               | delete a gateway, should return 404 when deleting a non-existent gateway |
-|                FR5.1               | retrieve all sensors in a gateway, 404 for an invalid gatewayMac when retrieving sensors |
-|                FR5.2               | create a sensor, 409 when creating a sensor with a duplicate macAddress |
-|                FR5.3               | retrieve a specific sensor, 404 for a non-existent sensor              |
-|                FR5.4               | update a sensor, 404 when updating a non-existent sensor               |
-|                FR5.5               | delete a sensor, should return 404 when deleting a non-existent sensor |
-|                FR6.1               |                                                                         |
-|                FR6.2               |                                                                         |
-|                FR6.3               |                                                                         |
-|                FR6.4               |                                                                         |
-|                FR6.5               |                                                                         |
-|                FR6.6               |                                                                         |
-|                FR6.7               |                                                                         |
+| Functional Requirement or scenario | Test(s)                                                                 | num      |
+| :--------------------------------: | :---------------------------------------------------------------------: | :------: |
+|                FR1.1               |  authentication 3 user types, token generation, wrong username o password  | 5 + n (tested indirectly in other e2e) 
+|                FR2.1               | get all users, wrong token, unauthorized, insufficient rights    | 10 |
+|                FR2.2               | create user, vari tipi, conflict error, unauthorized, insufficient rights, conflict error   | 9 |
+|                FR2.3               | get user, not found, unauthorized, insufficient rights                  | 10 |
+|                FR2.4               | delete user, not found, unauthorized, insufficient rights            | 9 |
+| | |
+|                FR3.1               | get all networks, insufficient rights, unauthorized | 10 |
+|                FR3.2               | create network, insufficient rights, unauthorized, duplicated code, input validation, ignore nested gateways | 21 |
+|                FR3.3               | get network, insufficient rights, unauthorized, non existing network (not found) | 12 |
+|                FR3.4               | update network, insufficient rights, unauthorized, not found, iput validation, code already exists, ignore gateways| 22 |
+|                FR3.5               | delete network, insufficient rights, unauthorized, not found | 14 |
+| | |
+|                FR4.1               | get all gateways in a network,  insufficient rights, unauthorized, invalid network | 8 |
+|                FR4.2               | create gateway, insufficient rights, unauthorized, duplicated mac, input validation, ignore nested sensors, invalid network | 14 |
+|                FR4.3               | get gateway, insufficient rights, unauthorized, not found, invalid network | 8 |
+|                FR4.4               | update gateway, insufficient rights, unauthorized, not found, input validation, code already exists, ignore sensors| 16 |
+|                FR4.5               | delete gateway, insufficient rights, unauthorized, not found, invalid network | 10 |
+| | |
+|                FR5.1               | get all sensors in a gateway, insufficient rights, unauthorized, invalid network/gateway | 12 |
+|                FR5.2               | create sensor, insufficient rights, unauthorized, duplicated mac, input validation, invalid network/gateway | 16 |
+|                FR5.3               | get sensor, insufficient rights, unauthorized, not found, invalid network/gateway   | 10 |
+|                FR5.4               | update a sensor, insufficient rights, unauthorized, not found, input validation, code already exists | 18 |
+|                FR5.5               | delete a sensor, insufficient rights, unauthorized, not found, invalid network/gateway | 13 |
+| | |
+|                FR6.1               | get measurements by network, insufficient rights, unauthorized, invalid network, date filtering, sensor filtering| 17 |
+|                FR6.2               | get statistics (by network), insufficient rights, unauthorized, invalid network, stats calculation |  7  |
+|                FR6.3               | get network outliers, insufficient rights, unauthorized, invalid network, date filtering, sensor filtering, outlier detection |  5 |
+|                FR6.4               | store measurements, input validation, batch storage  | 7 |
+|                FR6.5               | get measurements by sensor, invalid sensor, date filtering, empty sensor, edge cases                       | 15 |
+|                FR6.6               | get sensor statistics,  date filtering, statistical calculations, no measurements  | 7 |
+|                FR6.7               | get sensor outliers, date filtering, outlier detection, no measurements | 6 |
+
+I test che rimangono fuori (ca. 12) riguardano l'infrastruttura del progetto, il setup o funzioni helper. Questi contrubuiscono solo indirettamente al testing dei requisiti funzionali. <br> Alcuni fra i test poi, sopratutto e2e, possono coprire più requisiti funzionali assieme, e quindi non è sempre possibile dividerli precisamente come appartenenti ad un singolo caso
 
 ## Coverage white box
 
-Report here the screenshot of coverage values obtained with jest-- coverage
+La copertura risultante è praticamente completa (avg. 99.2 %), la statement coverage è sempre sopra l'88% e spesso completa. <br> Si può notare un calo di copertura nel file utils.ts nel quale non è stata testata la porzione della funzione parseStringArrayParam relativa alle stringhe, essendo i sensorMac sempre ricevuti in forma di Array di string. <br> Eventuali altre singole righe di codice scoperte sono di secondaria importanza e avrebbero richiesto test appositi prodotti solo per aumentare la percentuale di coverage senza un vero beneficio funzionale.
+
+![coverage value](./images/test-report.jpg)
