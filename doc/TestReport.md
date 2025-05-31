@@ -122,6 +122,6 @@ I test che rimangono fuori (ca. 12) riguardano l'infrastruttura del progetto, il
 
 ## Coverage white box
 
-La copertura risultante è quasi completa, la statement coverage è sempre sopra l'80% e spesso totale, si può notare un calo di copertura nel file utils.ts nel quale non è stata testata un porzione di una funzione, perché non è stata usata nel codice.
+La copertura risultante è praticamente completa (avg. 99.2 %), la statement coverage è sempre sopra l'88% e spesso completa. <br> Si può notare un calo di copertura nel file utils.ts nel quale non è stata testata la porzione della funzione parseStringArrayParam relativa alle stringhe, essendo i sensorMac sempre ricevuti in forma di Array di string. <br> Eventuali altre singole righe di codice scoperte sono di secondaria importanza e avrebbero richiesto test appositi prodotti solo per aumentare la percentuale di coverage senza un vero beneficio funzionale.
 
 ![coverage value](./images/test-report.jpg)
