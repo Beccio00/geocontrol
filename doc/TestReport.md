@@ -42,7 +42,7 @@
   #### integration test routes
   - Testano l'integrazione fra routes, middleware di autenticazione, validazione e di gestione errori. <br> Sono eseguiti usando jest e i mock, non ci sono vere interazioni col db, controller e servizio di autenticazione vengono simulati. <br> Verificano inoltre il parsing delle richeiste HTTP e la formattazione delle risposte agli errori
   ### e2e test
-  - Test completo dell'intera applicazione compreso database e servizio http, nessun componente è simulato, si testa la compelta integrazione di tutti i layer. <br> Validano l'applicazione partendo dalla richiesta HTTP con generazione di token reali (e quindi la catena di autenticazione e autorizzazione) <br> fino ad arrivare, attraversando tutti gli strati dell'applicazione, alla scrittura e lettura da database
+  - Test completo dell'intera applicazione compreso database e servizio http, nessun componente è simulato, si testa la completa integrazione di tutti i layer. <br> Validano l'applicazione partendo dalla richiesta HTTP con generazione di token reali (e quindi la catena di autenticazione e autorizzazione) <br> fino ad arrivare, attraversando tutti gli strati dell'applicazione, alla scrittura e lettura da database
   
 
     
