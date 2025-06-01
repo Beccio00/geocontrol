@@ -96,7 +96,7 @@ describe("MeasurementsController integration", () => {
 
     expect(result.sensorMacAddress).toBe(sensorMac);
     expect(result).not.toHaveProperty("measuraments");
-    expect(result.stats).toBeUndefined();
+    expect(result.stats).toBeDefined();
     });
 
     it("should handle date range with no measurements", async () => {
@@ -111,7 +111,7 @@ describe("MeasurementsController integration", () => {
     );
 
     expect(result).not.toHaveProperty("measuraments");
-    expect(result.stats).toBeUndefined();
+    expect(result.stats).toBeDefined();
     });
   });
 
