@@ -25,18 +25,18 @@ From timesheet.md sum all effort spent, in **ALL** activities (task1, task2, tas
 
 ## Computation of productivity
 
-productivity = ((LOC of production code)+ (LOC of test code)) / effort
+productivity = ((LOC of production code)+ (LOC of test code)) / effort  = (2287+9253)/287=40,209
 
 
 ## Comparison
 
 |                                        | Estimated (end of task 1) | Actual (june 7, end of task 3)|
 | -------------------------------------------------------------------------------- | -------- |----|
-| production code size | unknown  ||
-| test code size | unknown ||
-| total size  |||
-| effort |||
-| productivity  | 10 loc / hour ||
+| production code size | unknown  |2287 LoC|    
+| test code size | unknown |9253 LoC|           
+| total size  |unknown| 11540 LoC|                      
+| effort |230 h|287 h|                            
+| productivity  | 10 loc / hour |40,21 loc / hour|      
 
 
 Report, as estimate of effort, the value obtained via activity decomposition technique.
