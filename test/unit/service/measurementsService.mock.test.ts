@@ -152,7 +152,7 @@ describe('MeasurementService', () => {
             
             expect(mockCreateMeasurementsDTO).toHaveBeenCalledWith(
                 sensorMac,
-                undefined, // no stats for empty array
+                expect.any(Object), // stats
                 undefined  // no measurements
             );
         });

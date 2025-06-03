@@ -67,7 +67,7 @@ export function processSensorMeasurements(
     return MeasurementsToJSON(
         createMeasurementsDTO(
             sensorMac,
-            measurements.length > 0  ? createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC): undefined,
+            createStatsDTO(stats.mean, stats.variance, stats.upperThreshold, stats.lowerThreshold, startDateISOUTC, endDateISOUTC),
             measurements.length > 0 && includeMeasurements ? filteredMeasurements.map(([m, isOutlier]) =>  mapMeasurementDAOToDTO(m, isOutlier)) : undefined
         )
     )    

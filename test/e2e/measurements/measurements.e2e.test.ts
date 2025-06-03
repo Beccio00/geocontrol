@@ -202,7 +202,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
 
         })
@@ -253,7 +253,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
         })
         it("get network measurements with only endDate", async() =>{
@@ -303,7 +303,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
         })
         it("get network measurements with no date", async() =>{
@@ -347,7 +347,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
 
         })
@@ -366,7 +366,7 @@ describe("Measurements API (e2e)", () => {
             expect(s1).toHaveProperty("sensorMacAddress");
             expect(typeof s1.sensorMacAddress).toBe("string");
 
-            expect(s1).not.toHaveProperty("stats");
+            expect(s1).toHaveProperty("stats");
             expect(s1).not.toHaveProperty("measurements");
 
             const s2 = res.body[1];
@@ -374,7 +374,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
         })
         it("get network measurements with multiple existing sensorMACs", async() =>{
@@ -449,7 +449,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
         })
          it("get network stats for an non existing network", async() =>{
@@ -503,7 +503,7 @@ describe("Measurements API (e2e)", () => {
             expect(s2).toHaveProperty("sensorMacAddress");
             expect(typeof s2.sensorMacAddress).toBe("string");
 
-            expect(s2).not.toHaveProperty("stats");
+            expect(s2).toHaveProperty("stats");
             expect(s2).not.toHaveProperty("measurements");
         })
         it("get network outliers for an non existing network", async() =>{
@@ -691,7 +691,7 @@ describe("Measurements API (e2e)", () => {
             expect(res.body).toHaveProperty("sensorMacAddress");
             expect(typeof res.body.sensorMacAddress).toBe("string");
 
-            expect(res.body).not.toHaveProperty("stats");
+            expect(res.body).toHaveProperty("stats");
             expect(res.body).not.toHaveProperty("measurements");
         })
         it("get sensor with no measurements", async() =>{
@@ -704,7 +704,7 @@ describe("Measurements API (e2e)", () => {
             expect(res.body).toHaveProperty("sensorMacAddress");
             expect(typeof res.body.sensorMacAddress).toBe("string");
 
-            expect(res.body).not.toHaveProperty("stats");
+            expect(res.body).toHaveProperty("stats");
             expect(res.body).not.toHaveProperty("measurements");
         })
     }) 
@@ -795,7 +795,7 @@ describe("Measurements API (e2e)", () => {
             expect(res.body).toHaveProperty("sensorMacAddress");
             expect(typeof res.body.sensorMacAddress).toBe("string");
 
-            expect(res.body).not.toHaveProperty("stats");
+            expect(res.body).toHaveProperty("stats");
             expect(res.body).not.toHaveProperty("measurements");
         })
         it("get sensor outliers for a no exisitng network", async() =>{
